@@ -15,4 +15,10 @@
 	// Insert code here to initialize your application
 }
 
+-(IBAction)displayExportMovieDialog:(id)sender
+{
+	int a = 2;
+	NSLog(@"displayExportMovieDialog: a = %d", a);
+}
+
 @end

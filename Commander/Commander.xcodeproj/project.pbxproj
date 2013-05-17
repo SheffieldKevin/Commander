@@ -17,6 +17,8 @@
 		6EC24918174647B800958FBB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC248F8174647B800958FBB /* Cocoa.framework */; };
 		6EC24920174647B800958FBB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6EC2491E174647B800958FBB /* InfoPlist.strings */; };
 		6EC24923174647B800958FBB /* CommanderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24922174647B800958FBB /* CommanderTests.m */; };
+		6EC24932174687FB00958FBB /* YVSMovieExporterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24930174687FB00958FBB /* YVSMovieExporterWindowController.m */; };
+		6EC24933174687FB00958FBB /* YVSMovieExporterWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EC24931174687FB00958FBB /* YVSMovieExporterWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,9 @@
 		6EC2491F174647B800958FBB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6EC24921174647B800958FBB /* CommanderTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommanderTests.h; sourceTree = "<group>"; };
 		6EC24922174647B800958FBB /* CommanderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommanderTests.m; sourceTree = "<group>"; };
+		6EC2492F174687FB00958FBB /* YVSMovieExporterWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YVSMovieExporterWindowController.h; sourceTree = "<group>"; };
+		6EC24930174687FB00958FBB /* YVSMovieExporterWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YVSMovieExporterWindowController.m; sourceTree = "<group>"; };
+		6EC24931174687FB00958FBB /* YVSMovieExporterWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YVSMovieExporterWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +123,9 @@
 				6EC2490B174647B800958FBB /* YVSAppDelegate.m */,
 				6EC2490D174647B800958FBB /* MainMenu.xib */,
 				6EC248FF174647B800958FBB /* Supporting Files */,
+				6EC2492F174687FB00958FBB /* YVSMovieExporterWindowController.h */,
+				6EC24930174687FB00958FBB /* YVSMovieExporterWindowController.m */,
+				6EC24931174687FB00958FBB /* YVSMovieExporterWindowController.xib */,
 			);
 			path = Commander;
 			sourceTree = "<group>";
@@ -228,6 +236,7 @@
 				6EC24903174647B800958FBB /* InfoPlist.strings in Resources */,
 				6EC24909174647B800958FBB /* Credits.rtf in Resources */,
 				6EC2490F174647B800958FBB /* MainMenu.xib in Resources */,
+				6EC24933174687FB00958FBB /* YVSMovieExporterWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,6 +273,7 @@
 			files = (
 				6EC24905174647B800958FBB /* main.m in Sources */,
 				6EC2490C174647B800958FBB /* YVSAppDelegate.m in Sources */,
+				6EC24932174687FB00958FBB /* YVSMovieExporterWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 //
-//  YVSAppDelegate.h
+//  YVSMovieExporterWindowController.h
 //  Commander
 //
 //  Created by Kevin Meaney on 17/05/2013.
@@ -8,8 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface YVSAppDelegate : NSObject <NSApplicationDelegate>
-
--(IBAction)displayExportMovieDialog:(id)sender;
+@interface YVSMovieExporterWindowController : NSWindowController
 
 @end
