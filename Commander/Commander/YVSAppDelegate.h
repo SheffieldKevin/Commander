@@ -8,7 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class YVSMovieExporterWindowController;
+
 @interface YVSAppDelegate : NSObject <NSApplicationDelegate>
+{
+	YVSMovieExporterWindowController *movieExportController;
+}
 
 -(IBAction)displayExportMovieDialog:(id)sender;
 

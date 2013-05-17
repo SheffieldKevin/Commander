@@ -7,6 +7,7 @@
 //
 
 #import "YVSAppDelegate.h"
+#import "YVSMovieExporterWindowController.h"
 
 @implementation YVSAppDelegate
 
@@ -17,8 +18,8 @@
 
 -(IBAction)displayExportMovieDialog:(id)sender
 {
-	int a = 2;
-	NSLog(@"displayExportMovieDialog: a = %d", a);
+	movieExportController = [[YVSMovieExporterWindowController alloc] initWithWindowNibName:@"YVSMovieExporterWindowController"];
+	[movieExportController window];
 }
 
 @end
