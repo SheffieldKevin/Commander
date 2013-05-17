@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Commander' target in the 'Commander' project
+//
+
+#ifdef __OBJC__
+	#import <Cocoa/Cocoa.h>
+#endif
