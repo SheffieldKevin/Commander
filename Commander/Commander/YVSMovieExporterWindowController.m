@@ -6,22 +6,30 @@
 //  Copyright (c) 2013 Kevin Meaney. All rights reserved.
 //
 
+#import "YVSAppDelegate.h"
 #import "YVSMovieExporterWindowController.h"
 
 @interface YVSMovieExporterWindowController ()
+
+@property (nonatomic, weak) YVSAppDelegate *applicationDelegate;
 
 @end
 
 @implementation YVSMovieExporterWindowController
 
-- (id)initWithWindow:(NSWindow *)window
+- (id)initWithWindowNibName:(NSString *)windowNibName appDelegate:(YVSAppDelegate *)appDelegate
 {
-    self = [super initWithWindow:window];
-    if (self) {
-        // Initialization code here.
-    }
-    
-    return self;
+	self = [super initWithWindowNibName:windowNibName];
+	if (self)
+	{
+		[self setApplicationDelegate:appDelegate];
+	}
+	return self;
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+	[self.applicationDelegate setCurrentWindowController:nil];
 }
 
 - (void)windowDidLoad

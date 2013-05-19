@@ -11,6 +11,8 @@
 
 @implementation YVSAppDelegate
 
+@synthesize currentWindowController;
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	// Insert code here to initialize your application
@@ -18,8 +20,12 @@
 
 -(IBAction)displayExportMovieDialog:(id)sender
 {
-	movieExportController = [[YVSMovieExporterWindowController alloc] initWithWindowNibName:@"YVSMovieExporterWindowController"];
-	[movieExportController window];
+	YVSMovieExporterWindowController *movieExportController;
+	movieExportController = [[YVSMovieExporterWindowController alloc]
+						initWithWindowNibName:@"YVSMovieExporterWindowController"
+						appDelegate:self];
+	[self setCurrentWindowController:movieExportController];
+	[self.currentWindowController window];
 }
 
 @end

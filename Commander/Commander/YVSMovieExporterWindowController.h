@@ -8,6 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class YVSAppDelegate;
+
 @interface YVSMovieExporterWindowController : NSWindowController
+
+-(id)initWithWindowNibName:(NSString *)windowNibName appDelegate:(YVSAppDelegate *)appDelegate;
+
+-(void)windowWillClose:(NSNotification *)notification;
 
 @end
