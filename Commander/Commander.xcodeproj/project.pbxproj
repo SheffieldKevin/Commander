@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6E8739E0174A903A0022C6FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E8739DF174A903A0022C6FB /* CoreMedia.framework */; };
+		6E8739E2174A903E0022C6FB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E8739E1174A903E0022C6FB /* AVFoundation.framework */; };
+		6E8739E61752110A0022C6FB /* avexporter in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739E51752110A0022C6FB /* avexporter */; };
 		6EC248F9174647B800958FBB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC248F8174647B800958FBB /* Cocoa.framework */; };
 		6EC24903174647B800958FBB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6EC24901174647B800958FBB /* InfoPlist.strings */; };
 		6EC24905174647B800958FBB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24904174647B800958FBB /* main.m */; };
@@ -32,6 +35,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6E8739DF174A903A0022C6FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		6E8739E1174A903E0022C6FB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		6E8739E51752110A0022C6FB /* avexporter */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = avexporter; path = ../DerivedData/CommandLineConfigure/Build/Products/Debug/avexporter; sourceTree = "<group>"; };
 		6EC248F5174647B800958FBB /* Commander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Commander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EC248F8174647B800958FBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6EC248FB174647B800958FBB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -62,6 +68,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				6EC248F9174647B800958FBB /* Cocoa.framework in Frameworks */,
+				6E8739E0174A903A0022C6FB /* CoreMedia.framework in Frameworks */,
+				6E8739E2174A903E0022C6FB /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,9 +85,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6E8739E4175210C10022C6FB /* Executables */ = {
+			isa = PBXGroup;
+			children = (
+				6E8739E51752110A0022C6FB /* avexporter */,
+			);
+			name = Executables;
+			sourceTree = "<group>";
+		};
 		6EC248EC174647B800958FBB = {
 			isa = PBXGroup;
 			children = (
+				6E8739E4175210C10022C6FB /* Executables */,
+				6E8739E1174A903E0022C6FB /* AVFoundation.framework */,
+				6E8739DF174A903A0022C6FB /* CoreMedia.framework */,
 				6EC248FE174647B800958FBB /* Commander */,
 				6EC2491B174647B800958FBB /* CommanderTests */,
 				6EC248F7174647B800958FBB /* Frameworks */,
@@ -237,6 +256,7 @@
 				6EC24909174647B800958FBB /* Credits.rtf in Resources */,
 				6EC2490F174647B800958FBB /* MainMenu.xib in Resources */,
 				6EC24933174687FB00958FBB /* YVSMovieExporterWindowController.xib in Resources */,
+				6E8739E61752110A0022C6FB /* avexporter in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +483,7 @@
 				6EC24928174647B800958FBB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6EC24929174647B800958FBB /* Build configuration list for PBXNativeTarget "CommanderTests" */ = {
 			isa = XCConfigurationList;
@@ -471,6 +492,7 @@
 				6EC2492B174647B800958FBB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

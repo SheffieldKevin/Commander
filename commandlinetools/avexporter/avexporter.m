@@ -346,7 +346,7 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds) {
 		{
 			if ([self verbose])
 			{
-				printNSString([NSString stringWithFormat:@"Removing re-existing destination file at:%@", destinationURL]);
+				printNSString([NSString stringWithFormat:@"Removing pre-existing destination file at:%@", destinationURL]);
 			}
 			[[NSFileManager defaultManager] removeItemAtURL:destinationURL error:&error];
 		}
@@ -504,6 +504,8 @@ bail:
 	//  A simple listing of the presets available for export
 	printNSString(@"");
 	printNSString(@"Presets available for AVFoundation export:");
+	printNSString([NSString stringWithFormat:@"AVFoundation asset presets:%@", [AVAssetExportSession allExportPresets]]);
+/*
 	printNSString(@"  QuickTime movie presets:");
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPreset640x480]);
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPreset960x540]);
@@ -518,11 +520,13 @@ bail:
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPresetAppleM4VAppleTV]);
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPresetAppleM4VWiFi]);
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPresetAppleM4V720pHD]);
+	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPresetAppleM4V1080pHD]);
 	printNSString(@"  Interim format (QuickTime movie) preset:");
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPresetAppleProRes422LPCM]);
 	printNSString(@"  Passthrough preset:");
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPresetPassthrough]);
 	printNSString(@"");
+*/
 }
 
 
