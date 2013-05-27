@@ -458,7 +458,8 @@ bail:
 		printNSString([NSString stringWithFormat:@"Listing possible file export types"]);
 		for (NSString *theFileType in fileTypes)
 		{
-			printNSString([ NSString stringWithFormat:@"File Export type: %@", theFileType] );
+			printNSString([ NSString stringWithFormat:@"File Export type: %@",
+																theFileType] );
 		}
 	}
 }
@@ -529,7 +530,8 @@ int main (int argc, const char * argv[], const char* environ[])
 	BOOL success = NO;
 	@autoreleasepool
 	{
-		AVFrameGrab* frameGrabber = [[AVFrameGrab alloc] initWithArgs:argc argv:argv  environ:environ];
+		AVFrameGrab* frameGrabber = [[AVFrameGrab alloc] initWithArgs:argc argv:argv
+															  environ:environ];
 		if (frameGrabber)
 			success = [frameGrabber run];
 	}

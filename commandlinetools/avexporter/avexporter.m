@@ -314,18 +314,18 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds) {
 			[self doListMetadata:[self sourcePath]];
 		}
 		if ([self destinationPath] == nil) {
-			NSLog(@"No output path specified, only listing tracks and/or metadata, export was not performed.");
+			NSLog(@"No output path specified, only listing tracks and/or metadata.");
 			goto bail;
 		}
 		if ([self preset] == nil) {
-			NSLog(@"No preset specified, only listing tracks and/or metadata, export was not performed.");
+			NSLog(@"No preset specified, only listing tracks and/or metadata.");
 			goto bail;
 		}
 		
 		if ( [self verbose] && [self sourcePath] )
 		{
 			printNSString([NSString stringWithFormat:@"all av asset presets:%@",
-																[AVAssetExportSession allExportPresets]]);
+										[AVAssetExportSession allExportPresets]]);
 		}
 		
 		if ([self sourcePath] != nil) {
@@ -337,18 +337,24 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds) {
 		
 		if ([self verbose])
 		{
-			printNSString([NSString stringWithFormat:@"AVAssetExport for preset:%@ to with source:%@",
-																	[self preset], [destinationURL path]]);
+			printNSString([NSString stringWithFormat:
+						   @"AVAssetExport for preset:%@ to with source:%@",
+						   [self preset], [destinationURL path]]);
 		}
 		
-		destinationURL = [NSURL fileURLWithPath: [self destinationPath] isDirectory: NO];
-		if ([self removePreExistingFiles] && [[NSFileManager defaultManager] fileExistsAtPath:[self destinationPath]])
+		destinationURL = [NSURL fileURLWithPath: [self destinationPath]
+															isDirectory:NO];
+		if ([self removePreExistingFiles] && [[NSFileManager defaultManager]
+										fileExistsAtPath:[self destinationPath]])
 		{
 			if ([self verbose])
 			{
-				printNSString([NSString stringWithFormat:@"Removing pre-existing destination file at:%@", destinationURL]);
+				printNSString([NSString stringWithFormat:
+							   @"Removing pre-existing destination file at:%@",
+							   destinationURL]);
 			}
-			[[NSFileManager defaultManager] removeItemAtURL:destinationURL error:&error];
+			[[NSFileManager defaultManager] removeItemAtURL:destinationURL
+																	error:&error];
 		}
 
 		sourceAsset = [[AVURLAsset alloc] initWithURL:sourceURL options:nil];
@@ -356,9 +362,10 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds) {
 		if ([self verbose])
 		{
 			printNSString([NSString stringWithFormat:@"Compatible av asset presets:%@",
-							[AVAssetExportSession exportPresetsCompatibleWithAsset:sourceAsset]]);
+				[AVAssetExportSession exportPresetsCompatibleWithAsset:sourceAsset]]);
 		}
-		avsession = [[AVAssetExportSession alloc] initWithAsset:sourceAsset presetName:[self preset]];
+		avsession = [[AVAssetExportSession alloc] initWithAsset:sourceAsset
+													 presetName:[self preset]];
 
 		[avsession setOutputURL:destinationURL];
 		if ([self listFileTypes] && [self sourcePath])
@@ -421,14 +428,17 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds) {
 			if ([self showProgress])
 			{
 				dispatchTime = getDispatchTimeFromSeconds((float)1.0);
-				printNSString([NSString stringWithFormat:@"AVAssetExport running  progress=%3.2f%%", [avsession progress]*100]);
+				printNSString([NSString stringWithFormat:
+							   @"AVAssetExport running  progress=%3.2f%%",
+							   [avsession progress]*100]);
 			}
 			dispatch_semaphore_wait(sessionWaitSemaphore, dispatchTime);
 		}
 		while( [avsession status] < AVAssetExportSessionStatusCompleted );
 		
 		if ([self showProgress])
-			printNSString([NSString stringWithFormat:@"AVAssetExport finished progress=%3.2f", [avsession progress]*100]);
+			printNSString([NSString stringWithFormat:
+				@"AVAssetExport finished progress=%3.2f", [avsession progress]*100]);
 
 		if ([avsession status] != AVAssetExportSessionStatusCompleted)
 		{
@@ -450,8 +460,10 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds) {
 			[self doListTracks:[self destinationPath]];
 		}
 		
-		printNSString([NSString stringWithFormat:@"Finished export of %@ to %@ using preset:%@ success=%s\n",
-					   [self sourcePath], [self destinationPath], [self preset], (success ? "YES" : "NO")]);
+		printNSString([NSString stringWithFormat:
+					   @"Finished export of %@ to %@ using preset:%@ success=%s\n",
+					   [self sourcePath], [self destinationPath], [self preset],
+					   (success ? "YES" : "NO")]);
 	}
 bail:
 	return success;
@@ -469,32 +481,36 @@ bail:
 	[newUserDataCommentItem setKeySpace:AVMetadataKeySpaceQuickTimeUserData];
 	[newUserDataCommentItem setKey:AVMetadataQuickTimeUserDataKeyComment];
 	[newUserDataCommentItem setValue:[NSString stringWithFormat:
-									  @"QuickTime userdata: Exported to preset %@ using avexporter at: %@", presetName,
-									  [NSDateFormatter localizedStringFromDate:[NSDate date]
-																	 dateStyle:NSDateFormatterMediumStyle
-																	 timeStyle:NSDateFormatterShortStyle]]];
+		  @"QuickTime userdata: Exported to preset %@ using avexporter at: %@",
+		  presetName,
+		  [NSDateFormatter localizedStringFromDate:[NSDate date]
+										 dateStyle:NSDateFormatterMediumStyle
+										 timeStyle:NSDateFormatterShortStyle]]];
 	
 	AVMutableMetadataItem *newMetaDataCommentItem = [[AVMutableMetadataItem alloc] init];
 	[newMetaDataCommentItem setKeySpace:AVMetadataKeySpaceQuickTimeMetadata];
 	[newMetaDataCommentItem setKey:AVMetadataQuickTimeMetadataKeyComment];
 	[newMetaDataCommentItem setValue:[NSString stringWithFormat:
-									  @"QuickTime metadata: Exported to preset %@ using avexporter at: %@", presetName,
-									  [NSDateFormatter localizedStringFromDate:[NSDate date]
-																	 dateStyle:NSDateFormatterMediumStyle
-																	 timeStyle:NSDateFormatterShortStyle]]];
+		  @"QuickTime metadata: Exported to preset %@ using avexporter at: %@",
+		  presetName,
+		  [NSDateFormatter localizedStringFromDate:[NSDate date]
+										 dateStyle:NSDateFormatterMediumStyle
+										 timeStyle:NSDateFormatterShortStyle]]];
 	
 	AVMutableMetadataItem *newiTunesCommentItem = [[AVMutableMetadataItem alloc] init];
 	[newiTunesCommentItem setKeySpace:AVMetadataKeySpaceiTunes];
 	[newiTunesCommentItem setKey:AVMetadataiTunesMetadataKeyUserComment];
 	[newiTunesCommentItem setValue:[NSString stringWithFormat:
-									@"iTunes metadata: Exported to preset %@ using avexporter at: %@", presetName,
-									[NSDateFormatter localizedStringFromDate:[NSDate date]
-																   dateStyle:NSDateFormatterMediumStyle
-																   timeStyle:NSDateFormatterShortStyle]]];
+		@"iTunes metadata: Exported to preset %@ using avexporter at: %@",
+		presetName,
+		[NSDateFormatter localizedStringFromDate:[NSDate date]
+									   dateStyle:NSDateFormatterMediumStyle
+									   timeStyle:NSDateFormatterShortStyle]]];
 	
-	NSArray *newMetadata = @[newUserDataCommentItem, newMetaDataCommentItem, newiTunesCommentItem];
+	NSArray *newMetadata = @[newUserDataCommentItem, newMetaDataCommentItem,
+														newiTunesCommentItem];
 	NSArray *newMetadataList = (sourceMetadataList == nil ? newMetadata :
-								[sourceMetadataList arrayByAddingObjectsFromArray:newMetadata]);
+				[sourceMetadataList arrayByAddingObjectsFromArray:newMetadata]);
 	return newMetadataList;
 }
 
@@ -504,7 +520,8 @@ bail:
 	//  A simple listing of the presets available for export
 	printNSString(@"");
 	printNSString(@"Presets available for AVFoundation export:");
-	printNSString([NSString stringWithFormat:@"AVFoundation asset presets:%@", [AVAssetExportSession allExportPresets]]);
+	printNSString([NSString stringWithFormat:@"AVFoundation asset presets:%@",
+				   [AVAssetExportSession allExportPresets]]);
 /*
 	printNSString(@"  QuickTime movie presets:");
 	printNSString([NSString stringWithFormat:@"    %@", AVAssetExportPreset640x480]);
@@ -537,14 +554,15 @@ bail:
 	if (sourceURL)
 	{
 		AVURLAsset *sourceAsset = [[AVURLAsset alloc] initWithURL:sourceURL options:nil];
-		printNSString([NSString stringWithFormat:@"Listing tracks for asset from url:%@", [sourceURL path]]);
+		printNSString([NSString stringWithFormat:@"Listing tracks for asset from url:%@",
+																[sourceURL path]]);
 		NSInteger index = 0;
 		for (AVAssetTrack *track in [sourceAsset tracks])
 		{
 			printNSString([ NSString stringWithFormat:
-						   @"  Track index:%ld, trackID:%d, mediaType:%@, enabled:%d, isSelfContained:%d",
-						   index, [track trackID], [track mediaType], [track isEnabled],
-						   [track isSelfContained] ] );
+			@"  Track index:%ld, trackID:%d, mediaType:%@, enabled:%d, isSelfContained:%d",
+			index, [track trackID], [track mediaType], [track isEnabled],
+			[track isSelfContained] ] );
 			index++;
 		}
 	}
@@ -555,10 +573,11 @@ bail:
 	//  A simple listing of the tracks in the asset provided
 	if (fileTypes)
 	{
-		printNSString([NSString stringWithFormat:@"Listing possible file export types"]);
+		printNSString([NSString stringWithFormat:@"Listing export file types"]);
 		for (NSString *theFileType in fileTypes)
 		{
-			printNSString([ NSString stringWithFormat:@"File Export type: %@", theFileType] );
+			printNSString([ NSString stringWithFormat:@"File Export type: %@",
+																theFileType] );
 		}
 	}
 }
@@ -573,7 +592,8 @@ enum {
 	NSURL *sourceURL = [NSURL fileURLWithPath: assetPath isDirectory: NO];
 	if (sourceURL)
 	{
-		AVURLAsset *sourceAsset = [[AVURLAsset alloc] initWithURL:sourceURL options:nil];
+		AVURLAsset *sourceAsset = [[AVURLAsset alloc] initWithURL:sourceURL
+															options:nil];
 		NSLog(@"Listing metadata for asset from url:%@", [sourceURL path]);
 		for (NSString *format in [sourceAsset availableMetadataFormats])
 		{
@@ -583,7 +603,8 @@ enum {
 				NSObject *key = [item key];
 				NSString *itemValue = [[item value] description];
 				if ([itemValue length] > kMaxMetadataValueLength) {
-					itemValue = [NSString stringWithFormat:@"%@ ...", [itemValue substringToIndex:kMaxMetadataValueLength-4]];
+					itemValue = [NSString stringWithFormat:@"%@ ...",
+							[itemValue substringToIndex:kMaxMetadataValueLength-4]];
 				}
 				if ([key isKindOfClass: [NSNumber class]])
 				{
@@ -594,16 +615,18 @@ enum {
 					charValue[1] = charSource[2];
 					charValue[2] = charSource[1];
 					charValue[3] = charSource[0];
-					NSString *stringKey = [[NSString alloc] initWithBytes: charValue length:4 encoding:NSMacOSRomanStringEncoding];
+					NSString *stringKey = [[NSString alloc] initWithBytes: charValue
+										length:4 encoding:NSMacOSRomanStringEncoding];
 					printNSString([NSString stringWithFormat:
-								   @"  metadata item key:%@ (%ld), keySpace:%@ commonKey:%@ value:%@",
-								   stringKey, longValue, [item keySpace], [item commonKey], itemValue]);
+					   @"  metadata item key:%@ (%ld), keySpace:%@ commonKey:%@ value:%@",
+					   stringKey, longValue, [item keySpace], [item commonKey],
+						itemValue]);
 				}
 				else
 				{
 					printNSString([NSString stringWithFormat:
-								   @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
-								   [item key], [item keySpace], [item commonKey], itemValue]);
+					   @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
+					   [item key], [item keySpace], [item commonKey], itemValue]);
 				}
 			}
 		}
@@ -625,7 +648,8 @@ int main (int argc, const char * argv[], const char* environ[])
 	//	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	@autoreleasepool
 	{
-		AVExporter* exportObj = [[AVExporter alloc] initWithArgs:argc argv:argv  environ:environ];
+		AVExporter* exportObj = [[AVExporter alloc] initWithArgs:argc argv:argv
+															environ:environ];
 		if (exportObj)
 			success = [exportObj run];
 	}
