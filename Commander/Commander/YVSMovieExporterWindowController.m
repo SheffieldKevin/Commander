@@ -79,6 +79,8 @@
 	[self.applicationDelegate setCurrentWindowController:nil];
 	[self removeObserver:self forKeyPath:@"sourceURL" context:nil];
 	[self removeObserver:self forKeyPath:@"selectedPreset" context:nil];
+	[self removeObserver:self forKeyPath:@"selectedFileType" context:nil];
+	[NSApp stopModal];
 }
 
 - (void)windowDidLoad
@@ -94,7 +96,7 @@
 										options:theObservingOptions context:nil];
 	[self addObserver:self forKeyPath:@"selectedFileType"
 										options:theObservingOptions context:nil];
-    [self.window makeKeyAndOrderFront:nil];
+//    [self.window makeKeyAndOrderFront:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object

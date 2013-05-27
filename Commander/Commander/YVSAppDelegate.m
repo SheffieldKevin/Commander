@@ -25,7 +25,7 @@
 						initWithWindowNibName:@"YVSMovieExporterWindowController"
 						appDelegate:self];
 	[self setCurrentWindowController:movieExportController];
-	[self.currentWindowController window];
+	[NSApp runModalForWindow:[self.currentWindowController window]];
 }
 
 @end
