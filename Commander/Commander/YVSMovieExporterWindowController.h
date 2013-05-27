@@ -47,5 +47,7 @@
 -(IBAction)generateListCommand:(id)sender;
 -(IBAction)generateExportCommand:(id)sender;
 -(IBAction)generateListAndExportCommand:(id)sender;
+-(IBAction)copyListCommandToClipboard:(id)sender;
+-(IBAction)copyExportCommandToClipboard:(id)sender;
 
 @end

@@ -10,16 +10,27 @@
 #import "YVSMovieExporterWindowController.h"
 #import <AVFoundation/AVFoundation.h>
 
+#pragma mark -
+#pragma mark YVSMovieExporterWindowController Private Interface.
+
 @interface YVSMovieExporterWindowController ()
 
 @property (nonatomic, weak) YVSAppDelegate *applicationDelegate;
 - (void)generateFilename:(NSString *)baseFilename;
 + (NSString *)convertHoursMinSecondsToSeconds:(NSString *)hoursMinsSecs;
++ (NSString *)createCommandPath;
++ (void)copyStringToClipboard:(NSString *)clipString;
 @end
+
+#pragma mark -
+#pragma mark YVSMovieExporterWindowController Implementation
 
 @implementation YVSMovieExporterWindowController
 
 @synthesize applicationDelegate;
+
+#pragma mark -
+#pragma mark Synthesize properties
 
 @synthesize sourceFile; // IBOutlet NSPathControl
 @synthesize sourceURL;
@@ -33,8 +44,8 @@
 @synthesize presetsPopup; // IBOutlet NSPopupButton
 @synthesize fileTypesPopup; // IBOutlet NSPopupButton
 @synthesize specifyStartTimeAndDuration;
-@synthesize startTimeTextField;
-@synthesize durationTextField;
+@synthesize startTimeTextField; // IBOutlet NSTextField
+@synthesize durationTextField; // IBOutlet NSTextField
 @synthesize availablePresets;
 @synthesize availablePresetsController; // IBOutlet NSArrayController
 @synthesize selectedPreset;
@@ -48,6 +59,9 @@
 @synthesize baseFilenameTextField; // IBOutlet NSTextField
 @synthesize fullFilenameTextField; // IBOutlet NSTextField
 @synthesize generatedExportCommand; // IBOutlet NSTextField
+
+#pragma mark -
+#pragma mark Public methods
 
 - (id)initWithWindowNibName:(NSString *)windowNibName
 										appDelegate:(YVSAppDelegate *)appDelegate
@@ -81,16 +95,6 @@
 	[self addObserver:self forKeyPath:@"selectedFileType"
 										options:theObservingOptions context:nil];
     [self.window makeKeyAndOrderFront:nil];
-}
-
-- (void)generateFilename:(NSString *)baseFilename
-{
-	NSString *extension = filenameExtension.stringValue;
-	if (extension && [extension length])
-	{
-		[fullFilenameTextField setStringValue:[NSString stringWithFormat:
-											   @"%@.%@", baseFilename, extension]];
-	}
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
@@ -140,6 +144,9 @@
 	}
 }
 
+#pragma mark -
+#pragma mark IBAction methods
+
 - (IBAction)generateListCommand:(id)sender
 {
 	NSString *listTracksString = @" -listtracks";
@@ -147,26 +154,30 @@
 	NSString *listPresets = @" -listpresets";
 	NSString *verboseString = @" -verbose";
 	
-	NSMutableString *listCommand;
-	NSString *sourceMoviePath = [sourceURL path];
-	if (sourceMoviePath)
-	{
-		listCommand = [[NSMutableString alloc] initWithFormat:@"-source \"%@\"",
-																	sourceMoviePath];
-		if (self.verbose)
-			[listCommand appendString:verboseString];
+	@autoreleasepool
+	{		
+		NSMutableString *listCommand;
+		NSString *sourceMoviePath = [sourceURL path];
+		if (sourceMoviePath)
+		{
+			listCommand = [[NSMutableString alloc] initWithFormat:@"%@ -source \"%@\"",
+							[YVSMovieExporterWindowController createCommandPath],
+							sourceMoviePath];
+			if (self.verbose)
+				[listCommand appendString:verboseString];
 
-		if (self.listTracks)
-			[listCommand appendString:listTracksString];
+			if (self.listTracks)
+				[listCommand appendString:listTracksString];
 
-		if (self.listMetadata)
-			[listCommand appendString:listMetadataString];
-		
-		if (self.listAllPresets)
-			[listCommand appendString:listPresets];
-		
-		NSString *listCommandString = [[NSString alloc] initWithString:listCommand];
-		[generatedListCommand setStringValue:listCommandString];
+			if (self.listMetadata)
+				[listCommand appendString:listMetadataString];
+			
+			if (self.listAllPresets)
+				[listCommand appendString:listPresets];
+			
+			NSString *listCommandString = [[NSString alloc] initWithString:listCommand];
+			[generatedListCommand setStringValue:listCommandString];
+		}
 	}
 }
 
@@ -174,29 +185,6 @@
 {
 	[self generateListCommand:sender];
 	[self generateExportCommand:sender];
-}
-
-+ (NSString *)convertHoursMinSecondsToSeconds:(NSString *)hoursMinsSecs
-{
-	NSArray *stringArray = [hoursMinsSecs componentsSeparatedByString:@":"];
-	if ([stringArray count] != 3)
-		return hoursMinsSecs; // don't know what the results might be.
-	
-	Float64 time = 0.0L;
-	NSNumberFormatter *theFormatter = [[NSNumberFormatter alloc] init];
-	NSNumber *theNum = [theFormatter numberFromString:[stringArray objectAtIndex:0]];
-	Float64 theTimeNum = (Float64)[theNum doubleValue];
-	time = theTimeNum * 60.0L;	// 60 minutes in an hour.
-	theNum = [theFormatter numberFromString:[stringArray objectAtIndex:1]];
-	theTimeNum = (Float64)[theNum doubleValue];
-	time += theTimeNum;
-	time *= 60.0L;
-	theNum = [theFormatter numberFromString:[stringArray objectAtIndex:2]];
-	theTimeNum = (Float64)[theNum doubleValue];
-	time += theTimeNum;
-//	theNum = [NSNumber numberWithDouble:time];
-	NSString *returnString = [NSString stringWithFormat:@"%5.2F", time];
-	return returnString;
 }
 
 - (IBAction)generateExportCommand:(id)sender
@@ -211,7 +199,8 @@
 		NSString *sourceMoviePath = [sourceURL path];
 		if (sourceMoviePath)
 		{
-			exportCommand = [[NSMutableString alloc] initWithFormat:@"-source \"%@\"",
+			exportCommand = [[NSMutableString alloc] initWithFormat:@"%@ -source \"%@\"",
+							 [YVSMovieExporterWindowController createCommandPath],
 							 sourceMoviePath];
 			
 			if (self.verbose)
@@ -265,6 +254,76 @@
 			[generatedExportCommand setStringValue:exportCommandString];
 		}
 	}
+}
+
+- (IBAction)copyListCommandToClipboard:(id)sender
+{
+	NSString *listCommandString = [generatedListCommand stringValue];
+	if (listCommandString && [listCommandString length])
+		[YVSMovieExporterWindowController copyStringToClipboard:listCommandString];
+}
+
+- (IBAction)copyExportCommandToClipboard:(id)sender
+{
+	NSString *listCommandString = [generatedExportCommand stringValue];
+	if (listCommandString && [listCommandString length])
+		[YVSMovieExporterWindowController copyStringToClipboard:listCommandString];
+}
+
+#pragma mark -
+#pragma mark Private methods
+
+- (void)generateFilename:(NSString *)baseFilename
+{
+	NSString *extension = filenameExtension.stringValue;
+	if (extension && [extension length])
+	{
+		[fullFilenameTextField setStringValue:[NSString stringWithFormat:
+											   @"%@.%@", baseFilename, extension]];
+	}
+}
+
+#pragma mark -
+#pragma mark Private class methods
+
++ (NSString *)convertHoursMinSecondsToSeconds:(NSString *)hoursMinsSecs
+{
+	NSArray *stringArray = [hoursMinsSecs componentsSeparatedByString:@":"];
+	if ([stringArray count] != 3)
+		return hoursMinsSecs; // don't know what the results might be.
+	
+	Float64 time = 0.0L;
+	NSNumberFormatter *theFormatter = [[NSNumberFormatter alloc] init];
+	NSNumber *theNum = [theFormatter numberFromString:[stringArray objectAtIndex:0]];
+	Float64 theTimeNum = (Float64)[theNum doubleValue];
+	time = theTimeNum * 60.0L;	// 60 minutes in an hour.
+	theNum = [theFormatter numberFromString:[stringArray objectAtIndex:1]];
+	theTimeNum = (Float64)[theNum doubleValue];
+	time += theTimeNum;
+	time *= 60.0L;
+	theNum = [theFormatter numberFromString:[stringArray objectAtIndex:2]];
+	theTimeNum = (Float64)[theNum doubleValue];
+	time += theTimeNum;
+	NSString *returnString = [NSString stringWithFormat:@"%5.2F", time];
+	return returnString;
+}
+
++ (NSString *)createCommandPath
+{
+	// Top'n tail the command path with quotes just in case path contains spaces.
+	NSBundle *appBundle = [NSBundle mainBundle];
+	NSString *basicPath = [appBundle pathForResource:@"avexporter" ofType:nil];
+	NSString *pathString = [NSString stringWithFormat:@"\"%@\"", basicPath];
+	return pathString;
+}
+
++ (void)copyStringToClipboard:(NSString *)clipString
+{
+	NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+	[pasteBoard clearContents];
+	NSData *data = [clipString dataUsingEncoding:NSUTF8StringEncoding];
+	NSString *stringType = (__bridge NSString *)kUTTypeUTF8PlainText;
+	[pasteBoard setData:data forType:stringType];
 }
 
 #pragma mark -

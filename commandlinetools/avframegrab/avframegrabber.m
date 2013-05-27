@@ -249,7 +249,8 @@ static void printArgs(int argc, const char **argv);
 static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 {
 	long long milliseconds = seconds * 1000.0;
-	dispatch_time_t waitTime = dispatch_time( DISPATCH_TIME_NOW, 1000000LL * milliseconds );
+	dispatch_time_t waitTime;
+	waitTime = dispatch_time(DISPATCH_TIME_NOW, 1000000LL * milliseconds);
 	return waitTime;
 }
 
@@ -272,7 +273,7 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 
 		if ([self destinationPath] == nil)
 		{
-			NSLog(@"No output path specified, only listing tracks and/or metadata, export was not performed.");
+			NSLog(@"No output path, listing tracks and/or metadata, export not performed.");
 			goto bail;
 		}
 
@@ -282,40 +283,27 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 		}
 
 		AVAsset *sourceAsset = nil;
-//		NSError* error = nil;
 		
 		destinationURL = [NSURL fileURLWithPath: [self destinationPath] isDirectory: YES];
-//		if ([self verbose])
-//		{
-//			printNSString([NSString stringWithFormat:@"AVFrameGrab for source:%@",
-//						   [sourceURL path]]);
-//		}
-
-/*
-		if ([self removePreExistingFiles] && [[NSFileManager defaultManager] fileExistsAtPath:[self destinationPath]])
-		{
-			if ([self verbose])
-				printNSString([NSString stringWithFormat:@"Removing re-existing destination files in:%@", destinationURL]);
-
-			[[NSFileManager defaultManager] removeItemAtURL:destinationURL error:&error];
-		}
-*/
-		NSDictionary *optionDict = [[NSDictionary alloc] initWithObjectsAndKeys:@((NSInteger)YES), AVURLAssetPreferPreciseDurationAndTimingKey, nil];
+		NSDictionary *optionDict;
+		optionDict = [[NSDictionary alloc] initWithObjectsAndKeys:@((NSInteger)YES),
+								AVURLAssetPreferPreciseDurationAndTimingKey, nil];
 		sourceAsset = [[AVURLAsset alloc] initWithURL:sourceURL options:optionDict];
 
 		if ([[sourceAsset tracksWithMediaType:AVMediaTypeVideo] count] == 0)
 			return NO;
 
 		imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:sourceAsset];
-//		AVAssetImageGenerator * __weak imageGeneratorWeakReference = imageGenerator;
-//		[imageGeneratorWeakReference setRequestedTimeToleranceAfter:kCMTimeZero];
 		[imageGenerator setRequestedTimeToleranceAfter:kCMTimeZero];
 		[imageGenerator setRequestedTimeToleranceBefore:kCMTimeZero];
 		if ([self verbose])
 		{
-			printNSString([NSString stringWithFormat:@"Created AVAssetImageGenerator: %p", imageGenerator]);
-			printNSString([NSString stringWithFormat:@"source URL:%@", [sourceURL path]]);
-			printNSString([NSString stringWithFormat:@"destination URL:%@", [destinationURL path]]);
+			printNSString([NSString stringWithFormat:
+						   @"Created AVAssetImageGenerator: %p", imageGenerator]);
+			printNSString([NSString stringWithFormat:
+						   @"source URL:%@", [sourceURL path]]);
+			printNSString([NSString stringWithFormat:
+						   @"destination URL:%@", [destinationURL path]]);
 		}
 	}
 
@@ -347,57 +335,75 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 		dispatch_semaphore_t sessionWaitSemaphore = dispatch_semaphore_create( 0 );
 		
 		AVAssetImageGeneratorCompletionHandler imageCreatedCompletionHandler;
-		imageCreatedCompletionHandler = ^(CMTime requestedTime, CGImageRef image, CMTime actualTime,
-										  AVAssetImageGeneratorResult result, NSError *error)
+		imageCreatedCompletionHandler = ^(CMTime requestedTime, CGImageRef image,
+										  CMTime actualTime,
+										  AVAssetImageGeneratorResult result,
+										  NSError *error)
 		{
-			NSInteger localImageNumber = imageNumber++;
-			NSString *requestedTimeString = (NSString *)CFBridgingRelease(CMTimeCopyDescription(NULL, requestedTime));
-			NSString *actualTimeString = (NSString *)CFBridgingRelease(CMTimeCopyDescription(NULL, actualTime));
-			NSLog(@"Requested: %@; actual %@", requestedTimeString, actualTimeString);
-			
-			if (result == AVAssetImageGeneratorSucceeded)
+			@autoreleasepool
 			{
-				// Need to put together the file name.
-				NSString *numString = [NSString stringWithFormat:@"%.6ld", (long)localImageNumber];
-				NSString *fileExtension = (NSString *)CFBridgingRelease(
-							UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)[self exportImageFileType], kUTTagClassFilenameExtension));
-				NSString *fullPath = [NSString stringWithFormat:@"%@/%@%@.%@", [self destinationPath], [self baseFileName], numString, fileExtension];
-				NSURL *destinationURL = [[NSURL alloc] initFileURLWithPath:fullPath];
-				CGImageDestinationRef destination = CGImageDestinationCreateWithURL(
-																		(__bridge CFURLRef)destinationURL,
-																		(__bridge CFStringRef)[self exportImageFileType],
-																					1, nil);
-				CGImageDestinationAddImage(destination, image, nil);
-				bool result = CGImageDestinationFinalize(destination);
-				if (!result && [self verbose])
+				NSInteger localImageNumber = imageNumber++;
+				NSString *requestedTimeString = (NSString *)CFBridgingRelease(
+										CMTimeCopyDescription(NULL, requestedTime));
+				NSString *actualTimeString = (NSString *)CFBridgingRelease(
+										CMTimeCopyDescription(NULL, actualTime));
+				NSLog(@"Requested: %@; actual %@", requestedTimeString, actualTimeString);
+				
+				if (result == AVAssetImageGeneratorSucceeded)
 				{
-					NSLog(@"Failed to write image to %@", fullPath);
+					// Need to put together the file name.
+					NSString *numString = [NSString stringWithFormat:@"%.6ld",
+															(long)localImageNumber];
+					NSString *fileExtension = (NSString *)CFBridgingRelease(
+								UTTypeCopyPreferredTagWithClass(
+									(__bridge CFStringRef)[self exportImageFileType],
+									kUTTagClassFilenameExtension));
+					NSString *fullPath = [NSString stringWithFormat:@"%@/%@%@.%@",
+														[self destinationPath],
+														[self baseFileName],
+														numString,
+														fileExtension];
+					NSURL *destinationURL = [[NSURL alloc] initFileURLWithPath:fullPath];
+					CGImageDestinationRef destination = CGImageDestinationCreateWithURL(
+									(__bridge CFURLRef)destinationURL,
+									(__bridge CFStringRef)[self exportImageFileType],
+												1, nil);
+					CGImageDestinationAddImage(destination, image, nil);
+					bool result = CGImageDestinationFinalize(destination);
+					if (!result && [self verbose])
+					{
+						NSLog(@"Failed to write image to %@", fullPath);
+					}
+					CFRelease(destination);
 				}
-				CFRelease(destination);
+				if (result == AVAssetImageGeneratorFailed && [self verbose])
+				{
+					NSLog(@"Failed with error: %@", [error localizedDescription]);
+				}
+				
+				if (result == AVAssetImageGeneratorCancelled && [self verbose])
+				{
+					NSLog(@"Canceled");
+					dispatch_semaphore_signal(sessionWaitSemaphore);
+				}
+				else if (imageNumber == numTimes)
+					dispatch_semaphore_signal(sessionWaitSemaphore);
 			}
-			if (result == AVAssetImageGeneratorFailed && [self verbose])
-			{
-				NSLog(@"Failed with error: %@", [error localizedDescription]);
-			}
-			
-			if (result == AVAssetImageGeneratorCancelled && [self verbose])
-			{
-				NSLog(@"Canceled");
-				dispatch_semaphore_signal(sessionWaitSemaphore);
-			}
-			else if (imageNumber == numTimes)
-				dispatch_semaphore_signal(sessionWaitSemaphore);
 		};
 		
-		[imageGenerator generateCGImagesAsynchronouslyForTimes:cmTimesArray completionHandler:imageCreatedCompletionHandler];
+		[imageGenerator generateCGImagesAsynchronouslyForTimes:cmTimesArray
+								completionHandler:imageCreatedCompletionHandler];
 		
 		do
 		{
-			dispatch_time_t dispatchTime = DISPATCH_TIME_FOREVER;  // if we dont want progress, we will wait until it finishes.
+			dispatch_time_t dispatchTime = DISPATCH_TIME_FOREVER;
+			// if we dont want progress, we will wait until it finishes.
 			if ([self showProgress])
 			{
 				dispatchTime = getDispatchTimeFromSeconds((float)1.0);
-				printNSString([NSString stringWithFormat:@"generateCGImagesAsynchronouslyForTimes running  progress=%3.2f%%", imageNumber*100.0 / numTimes]);
+				printNSString([NSString stringWithFormat:
+					@"generateCGImagesAsynchronouslyForTimes running  progress=%3.2f%%",
+					imageNumber*100.0 / numTimes]);
 			}
 			dispatch_semaphore_wait(sessionWaitSemaphore, dispatchTime);
 		}
@@ -412,8 +418,10 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 		if ([self listTracks] && [self destinationPath])
 			[self doListTracks:[self destinationPath]];
 		
-		printNSString([NSString stringWithFormat:@"Finished creating images of %@ to %@ success=%s\n",
-					   [self sourcePath], [self destinationPath], (success ? "YES" : "NO")]);
+		printNSString([NSString stringWithFormat:
+					   @"Finished creating images of %@ to %@ success=%s\n",
+					   [self sourcePath], [self destinationPath],
+					   (success ? "YES" : "NO")]);
 	}
 bail:
 	return success;
@@ -425,15 +433,17 @@ bail:
 	NSURL *sourceURL = [NSURL fileURLWithPath: assetPath isDirectory: NO];
 	if (sourceURL)
 	{
-		AVURLAsset *sourceAsset = [[AVURLAsset alloc] initWithURL:sourceURL options:nil];
-		printNSString([NSString stringWithFormat:@"Listing tracks for asset from url:%@", [sourceURL path]]);
+		AVURLAsset *sourceAsset;
+		sourceAsset = [[AVURLAsset alloc] initWithURL:sourceURL options:nil];
+		printNSString([NSString stringWithFormat:@"Listing tracks for AVURLAsset:%@",
+															[sourceURL path]]);
 		NSInteger index = 0;
 		for (AVAssetTrack *track in [sourceAsset tracks])
 		{
 			printNSString([ NSString stringWithFormat:
-						   @"  Track index:%ld, trackID:%d, mediaType:%@, enabled:%d, isSelfContained:%d",
-						   index, [track trackID], [track mediaType], [track isEnabled],
-						   [track isSelfContained] ] );
+			   @"  Track index:%ld, trackID:%d, mediaType:%@, enabled:%d, isSelfContained:%d",
+			   index, [track trackID], [track mediaType], [track isEnabled],
+			   [track isSelfContained] ] );
 			index++;
 		}
 	}
@@ -473,7 +483,8 @@ enum {
 				NSObject *key = [item key];
 				NSString *itemValue = [[item value] description];
 				if ([itemValue length] > kMaxMetadataValueLength) {
-					itemValue = [NSString stringWithFormat:@"%@ ...", [itemValue substringToIndex:kMaxMetadataValueLength-4]];
+					itemValue = [NSString stringWithFormat:@"%@ ...",
+								 [itemValue substringToIndex:kMaxMetadataValueLength-4]];
 				}
 				if ([key isKindOfClass: [NSNumber class]])
 				{
@@ -484,16 +495,20 @@ enum {
 					charValue[1] = charSource[2];
 					charValue[2] = charSource[1];
 					charValue[3] = charSource[0];
-					NSString *stringKey = [[NSString alloc] initWithBytes: charValue length:4 encoding:NSMacOSRomanStringEncoding];
+					NSString *stringKey;
+					stringKey = [[NSString alloc]
+										initWithBytes:charValue
+												length:4
+											encoding:NSMacOSRomanStringEncoding];
 					printNSString([NSString stringWithFormat:
-								   @"  metadata item key:%@ (%ld), keySpace:%@ commonKey:%@ value:%@",
-								   stringKey, longValue, [item keySpace], [item commonKey], itemValue]);
+				   @"  metadata item key:%@ (%ld), keySpace:%@ commonKey:%@ value:%@",
+				   stringKey, longValue, [item keySpace], [item commonKey], itemValue]);
 				}
 				else
 				{
 					printNSString([NSString stringWithFormat:
-								   @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
-								   [item key], [item keySpace], [item commonKey], itemValue]);
+					   @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
+					   [item key], [item keySpace], [item commonKey], itemValue]);
 				}
 			}
 		}
