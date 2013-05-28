@@ -1,7 +1,7 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf370
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww12520\viewh8400\viewkind0
+\paperw11900\paperh16840\margl1440\margr1440\vieww13060\viewh13040\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
 \f0\b\fs28 \cf0 NSApplication\
@@ -52,4 +52,19 @@
 \b0\fs24 \
     \'95 Used in class method convertHoursMiSecondsToSeconds in file YVSMovieExporterWindowController.m.\
 \
+
+\b\fs28 Populating a NSPopUpButton menu from an NSArray
+\b0\fs24 \
+    \'95 I find doing this to be non-obvious. This is what worked for me in the end.\
+        \'95 You need to add an array controller in the nib/xib file.\
+        \'95 You need to connect that array controller to a property in you class.\
+        \'95 In code you need to assign an array of the menu item names to the to the array controller using setContent.\
+        \'95 If the list of menu items changes, the new array needs to be assigned to the array controller using setContent.\
+        \'95 In the bindings inspector of the NSPopUpButton Content needs to be bound to the array controller.\
+            \'95 The Controller key needs to be arrangedObjects. Model key path is empty.\
+        \'95 In the bindings inspector of the NSPopUpButton Content Values needs to be bound to the array controller.\
+            \'95 The Controller key needs to be arrangedObjects.\
+            \'95 If the array of menu items is just an array of NSString objects then model key path is empty otherwise\
+            \'95 Model Key Path is the member name of the object that is the menu item name & is a NSString.  \
+        \'95 In the bindings inspector of the NSPopUpButton the Selected Object should be a NSString property of an object that is referenced in the nib/xib file.\
 }
