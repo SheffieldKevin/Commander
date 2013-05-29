@@ -10,13 +10,12 @@
 		1E1D58BC1368D74F00D93743 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E1D58BB1368D74F00D93743 /* Foundation.framework */; };
 		1E1D58BF1368D74F00D93743 /* avexporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E1D58BE1368D74F00D93743 /* avexporter.m */; };
 		6E69E0B817390F4E00608067 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E1D58BB1368D74F00D93743 /* Foundation.framework */; };
-		6E69E0BF17390F4E00608067 /* avframegrab.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E69E0BE17390F4E00608067 /* avframegrab.1 */; };
 		6E69E0C41739185E00608067 /* avframegrabber.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E69E0C31739185E00608067 /* avframegrabber.m */; };
+		6E8739EF17561A4B0022C6FB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E8739EE17561A4B0022C6FB /* Cocoa.framework */; };
 		6EC248D417395B1800958FBB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC4D29B156478AC00E22906 /* AVFoundation.framework */; };
 		6EC248D517395B1F00958FBB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC4D29D156478CD00E22906 /* CoreMedia.framework */; };
 		6EC248E0174266C900958FBB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E1D58BB1368D74F00D93743 /* Foundation.framework */; };
 		6EC248E3174266C900958FBB /* arcexamples.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC248E2174266C900958FBB /* arcexamples.m */; };
-		6EC248EB174273CB00958FBB /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC248D917406DD400958FBB /* AppKit.framework */; };
 		6EC4D29C156478AC00E22906 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC4D29B156478AC00E22906 /* AVFoundation.framework */; };
 		6EC4D29E156478CD00E22906 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC4D29D156478CD00E22906 /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -28,16 +27,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-		6E69E0B517390F4E00608067 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-				6E69E0BF17390F4E00608067 /* avframegrab.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -61,6 +50,8 @@
 		6E69E0BD17390F4E00608067 /* avframegrab-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "avframegrab-Prefix.pch"; sourceTree = "<group>"; };
 		6E69E0BE17390F4E00608067 /* avframegrab.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = avframegrab.1; sourceTree = "<group>"; };
 		6E69E0C31739185E00608067 /* avframegrabber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = avframegrabber.m; sourceTree = "<group>"; };
+		6E8739EC17561A180022C6FB /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		6E8739EE17561A4B0022C6FB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6EC248D917406DD400958FBB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		6EC248DF174266C900958FBB /* arcexamples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = arcexamples; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EC248E2174266C900958FBB /* arcexamples.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = arcexamples.m; sourceTree = "<group>"; };
@@ -84,7 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6EC248EB174273CB00958FBB /* AppKit.framework in Frameworks */,
+				6E8739EF17561A4B0022C6FB /* Cocoa.framework in Frameworks */,
 				6E69E0B817390F4E00608067 /* Foundation.framework in Frameworks */,
 				6EC248D417395B1800958FBB /* AVFoundation.framework in Frameworks */,
 				6EC248D517395B1F00958FBB /* CoreMedia.framework in Frameworks */,
@@ -126,6 +117,8 @@
 		1E1D58BA1368D74F00D93743 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6E8739EE17561A4B0022C6FB /* Cocoa.framework */,
+				6E8739EC17561A180022C6FB /* CoreGraphics.framework */,
 				6EC248D917406DD400958FBB /* AppKit.framework */,
 				6EC4D29D156478CD00E22906 /* CoreMedia.framework */,
 				6EC4D29B156478AC00E22906 /* AVFoundation.framework */,
@@ -212,7 +205,6 @@
 			buildPhases = (
 				6E69E0B317390F4E00608067 /* Sources */,
 				6E69E0B417390F4E00608067 /* Frameworks */,
-				6E69E0B517390F4E00608067 /* CopyFiles */,
 			);
 			buildRules = (
 			);
