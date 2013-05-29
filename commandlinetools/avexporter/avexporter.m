@@ -364,6 +364,16 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds) {
 			printNSString([NSString stringWithFormat:@"Compatible av asset presets:%@",
 				[AVAssetExportSession exportPresetsCompatibleWithAsset:sourceAsset]]);
 		}
+		if (!([sourceAsset isExportable] || [sourceAsset hasProtectedContent]))
+		{
+			int exportable = [sourceAsset isExportable];
+			int hasProtectedContent = [sourceAsset hasProtectedContent];
+			printNSString([NSString stringWithFormat:
+						   @"Source movie exportable:%d, hasProtectedConent:%d",
+						   exportable, hasProtectedContent]);
+			goto bail;
+		}
+		
 		avsession = [[AVAssetExportSession alloc] initWithAsset:sourceAsset
 													 presetName:[self preset]];
 

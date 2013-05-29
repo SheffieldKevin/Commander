@@ -31,6 +31,8 @@
 static void printNSString(NSString *string);
 static void printArgs(int argc, const char **argv);
 
+typedef enum { kSpecifyTimes, kSpecifyNumber, kSpecifyPeriod } FrameGrabTimesType;
+
 #pragma mark -
 #pragma mark AVFrameGrab Interface
 
@@ -77,11 +79,17 @@ static void printArgs(int argc, const char **argv);
 @property (assign) BOOL		frameGrabComplete;
 @property (assign) BOOL		listTracks;
 @property (assign) BOOL		listMetadata;
+@property (assign) FrameGrabTimesType frameGrabTimeType;
+
 // @property (assign) BOOL		removePreExistingFiles;
 
 - (id)initWithArgs: (int) argc  argv: (const char **) argv environ: (const char **) environ;
 - (void)printUsage;
 
+- (NSArray *)createTimesFromSpecifiedTimes:(AVAsset *)urlAsset;
+- (NSArray *)createTimesFromNumberOfTimes:(AVAsset *)urlAsset;
+- (NSArray *)createTimesFromPeriod:(AVAsset *)urlAsset;
+- (NSArray *)createListOfTimes:(AVAsset *)urlAsset;
 - (int)run;
 
 - (void) doListTracks:(NSString *)assetPath;
@@ -110,6 +118,8 @@ static void printArgs(int argc, const char **argv);
 @synthesize frameGrabFailed;
 @synthesize listTracks;
 @synthesize listMetadata;
+@synthesize frameGrabTimeType;
+
 // @synthesize removePreExistingFiles;
 
 -(id) initWithArgs: (int) argc  argv: (const char **) argv environ: (const char **) environ
@@ -166,6 +176,21 @@ static void printArgs(int argc, const char **argv);
 		else if (!strcmp(args, "times"))
 		{
 			[self setTimes:@(*argv++)];
+			[self setFrameGrabTimeType:kSpecifyTimes];
+			gotTimes = YES;
+			argc--;
+		}
+		else if (!strcmp(args, "number"))
+		{
+			[self setTimes:@(*argv++)];
+			[self setFrameGrabTimeType:kSpecifyNumber];
+			gotTimes = YES;
+			argc--;
+		}
+		else if (!strcmp(args, "period"))
+		{
+			[self setTimes:@(*argv++)];
+			[self setFrameGrabTimeType:kSpecifyPeriod];
 			gotTimes = YES;
 			argc--;
 		}
@@ -233,7 +258,9 @@ static void printArgs(int argc, const char **argv);
 	printf("	 	-source <sourceMovieURL>\n");
 //	printf("		-replace   Replace any files if they already exist.\n");
 	printf("	 	-filetype <file type string> The file type (eg public.jpeg) for the output file.\n");
-	printf("		-times a,b,c,d  A list of times to take framegrabs (seconds from start). Has dec point, no spaces, sep by ,. Ignores invalid times.\n");
+	printf("		-times <list of times> A list of times to take framegrabs (in seconds). Has dec point, no spaces, sep by ,. Ignores invalid times.\n");
+	printf("		-number <number> The number of framegrabs to take, evenly spaced throughout the movie. Mutually exclusive with times.\n");
+	printf("		-period <period> A framegrab will be taken ever <period> number of seconds. Mutually exclusive with -period and -times.\n");
 	printf("		-basefilename The base file name which will have appended grab # and extension.\n");
 	printf("	Also available are some setup options:\n");
 	printf("		-verbose  Print more information about the execution.\n");
@@ -245,6 +272,97 @@ static void printArgs(int argc, const char **argv);
 	printf("	./avframegrab -destination ~/Documents/temp -listtracks -source /path/to/myTestMovie.mov -times 0.2,0.4,0.6,0.8,1.0 -filetype public.png -basefilename Image\n");
 }
 
+- (NSArray *)createTimesFromSpecifiedTimes:(AVAsset *)urlAsset
+{
+	NSArray *timesArray = [[self times] componentsSeparatedByString:@","];
+	if (!timesArray)
+		return nil;
+
+	if ([timesArray count] == 0)
+		return nil;
+	
+	NSNumber *theNum = nil;
+	NSNumberFormatter *theFormatter = [[NSNumberFormatter alloc] init];
+	NSMutableArray *cmTimesArray = [[NSMutableArray alloc] initWithCapacity:0];
+	NSValue *cmTimeValue = nil;
+	
+	for (NSString *theString in timesArray)
+	{
+		theNum = [theFormatter numberFromString:theString];
+		if (theNum)
+		{
+			Float64 theTimeNum = (Float64)[theNum doubleValue];
+			CMTime frameGrabTime = CMTimeMakeWithSeconds(theTimeNum, 600);
+			cmTimeValue = [NSValue valueWithCMTime:frameGrabTime];
+			[cmTimesArray addObject:cmTimeValue];
+		}
+	}
+	if ([cmTimesArray count] == 0)
+		return nil;
+	
+	return cmTimesArray;
+}
+
+- (NSArray *)createTimesFromNumberOfTimes:(AVAsset *)urlAsset
+{
+	NSNumberFormatter *theFormatter = [[NSNumberFormatter alloc] init];
+	NSNumber *numberOfTimesRef = [theFormatter numberFromString:[self times]];
+	if (!numberOfTimesRef || [numberOfTimesRef integerValue] == 0)
+		return nil;
+
+	NSInteger numberOfTimes = [numberOfTimesRef integerValue];
+	CMTime movieDuration = [urlAsset duration];
+	if (numberOfTimes == 1)
+	{
+		// Take a framegrab halfway through the movie.
+		CMTime frameTime = CMTimeMultiplyByFloat64(movieDuration, 0.5L);
+		NSValue *midVal = [NSValue valueWithCMTime:frameTime];
+//		return [NSArray arrayWithObject:midVal];
+		return @[midVal];
+	}
+	Float64 inverseNumTimesM1 = 1.0L / (numberOfTimes - 1.0L);
+	CMTime periodTime = CMTimeMultiplyByFloat64(movieDuration, inverseNumTimesM1);
+	CMTime frameGrabTime = CMTimeMake(0L, movieDuration.timescale);
+	NSMutableArray *cmTimesArray = [[NSMutableArray alloc] initWithCapacity:0];
+	for (NSInteger i=0 ; i < numberOfTimes ; ++i)
+	{
+//		if (i == numberOfTimes - 1)
+//			frameGrabTime.value--;
+		[cmTimesArray addObject:[NSValue valueWithCMTime:frameGrabTime]];
+		if (i == numberOfTimes - 2)
+			periodTime.value = periodTime.value - periodTime.timescale / 100;
+		frameGrabTime = CMTimeAdd(frameGrabTime, periodTime);
+	}
+	return [[NSArray alloc] initWithArray:cmTimesArray];
+}
+
+- (NSArray *)createTimesFromPeriod:(AVAsset *)urlAsset
+{
+	NSNumberFormatter *theFormatter = [[NSNumberFormatter alloc] init];
+	NSNumber *periodRef = [theFormatter numberFromString:[self times]];
+	Float64 periodTime = [periodRef doubleValue];
+	CMTime movieDuration = [urlAsset duration];
+	CMTime period = CMTimeMakeWithSeconds(periodTime, movieDuration.timescale);
+	CMTime frameGrabTime = CMTimeMake(0, movieDuration.timescale);
+	NSMutableArray *cmTimesArray = [[NSMutableArray alloc] initWithCapacity:0];
+	while (CMTimeCompare(frameGrabTime, movieDuration) < 0)
+	{
+		[cmTimesArray addObject:[NSValue valueWithCMTime:frameGrabTime]];
+		frameGrabTime = CMTimeAdd(frameGrabTime, period);
+	}
+	return [[NSArray alloc] initWithArray:cmTimesArray];
+}
+
+- (NSArray *)createListOfTimes:(AVAsset *)urlAsset
+{
+	if ([self frameGrabTimeType] == kSpecifyTimes)
+		return [self createTimesFromSpecifiedTimes:urlAsset];
+	else if ([self frameGrabTimeType] == kSpecifyNumber)
+		return [self createTimesFromNumberOfTimes:urlAsset];
+	else if ([self frameGrabTimeType] == kSpecifyPeriod)
+		return [self createTimesFromPeriod:urlAsset];
+	return nil;
+}
 
 static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 {
@@ -260,6 +378,7 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 	AVAssetImageGenerator *imageGenerator;
 	NSURL   *destinationURL;
 	BOOL	success = YES;
+	AVAsset *sourceAsset = nil;
 
 	@autoreleasepool
 	{
@@ -281,8 +400,6 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 		{
 			sourceURL = [NSURL fileURLWithPath: [self sourcePath] isDirectory: NO];
 		}
-
-		AVAsset *sourceAsset = nil;
 		
 		destinationURL = [NSURL fileURLWithPath: [self destinationPath] isDirectory: YES];
 		NSDictionary *optionDict;
@@ -292,6 +409,16 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 
 		if ([[sourceAsset tracksWithMediaType:AVMediaTypeVideo] count] == 0)
 			return NO;
+
+		if (!([sourceAsset isExportable] || [sourceAsset hasProtectedContent]))
+		{
+			int exportable = [sourceAsset isExportable];
+			int hasProtectedContent = [sourceAsset hasProtectedContent];
+			printNSString([NSString stringWithFormat:
+						   @"Source movie exportable: %d, hasProtectedConent: %d",
+						   exportable, hasProtectedContent]);
+			return NO;
+		}
 
 		imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:sourceAsset];
 		[imageGenerator setRequestedTimeToleranceAfter:kCMTimeZero];
@@ -307,31 +434,15 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 		}
 	}
 
-	//	pool = [[NSAutoreleasePool alloc] init];
 	@autoreleasepool
 	{
-		NSArray *timesArray = [[self times] componentsSeparatedByString:@","];
-		NSInteger numTimes = [timesArray count];
-		if (numTimes == 0)
+		NSArray *cmTimesArray = [self createListOfTimes:sourceAsset];
+		if (!cmTimesArray || [cmTimesArray count] == 0)
 			return NO;
-
-		__block NSInteger imageNumber = 0;
-		NSNumber *theNum = nil;
-		NSNumberFormatter *theFormatter = [[NSNumberFormatter alloc] init];
-		NSMutableArray *cmTimesArray = [[NSMutableArray alloc] initWithCapacity:0];
-		NSValue *cmTimeValue = nil;
-
-		for (NSString *theString in timesArray)
-		{
-			theNum = [theFormatter numberFromString:theString];
-			Float64 theTimeNum = (Float64)[theNum doubleValue];
-			CMTime frameGrabTime = CMTimeMakeWithSeconds(theTimeNum, 600);
-			cmTimeValue = [NSValue valueWithCMTime:frameGrabTime];
-			[cmTimesArray addObject:cmTimeValue];
-		}
 		
-//		NSFileManager *fileManager = [NSFileManager defaultManager];
+		NSInteger numTimes = [cmTimesArray count];
 		//  Set up a semaphore for the completion handler and progress timer
+		__block NSInteger imageNumber = 0;
 		dispatch_semaphore_t sessionWaitSemaphore = dispatch_semaphore_create( 0 );
 		
 		AVAssetImageGeneratorCompletionHandler imageCreatedCompletionHandler;
@@ -342,7 +453,7 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 		{
 			@autoreleasepool
 			{
-				NSInteger localImageNumber = imageNumber++;
+				NSInteger localImageNumber = imageNumber;
 				NSString *requestedTimeString = (NSString *)CFBridgingRelease(
 										CMTimeCopyDescription(NULL, requestedTime));
 				NSString *actualTimeString = (NSString *)CFBridgingRelease(
@@ -386,7 +497,8 @@ static dispatch_time_t getDispatchTimeFromSeconds(float seconds)
 					NSLog(@"Canceled");
 					dispatch_semaphore_signal(sessionWaitSemaphore);
 				}
-				else if (imageNumber == numTimes)
+				imageNumber++;
+				if (imageNumber == numTimes)
 					dispatch_semaphore_signal(sessionWaitSemaphore);
 			}
 		};
