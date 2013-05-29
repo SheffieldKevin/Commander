@@ -7,28 +7,53 @@
 //
 
 #import "YVSFrameGrabberWindowController.h"
+#import "YVSAppDelegate.h"
 
 @interface YVSFrameGrabberWindowController ()
-
+@property (nonatomic, weak) YVSAppDelegate *applicationDelegate;
 @end
 
 @implementation YVSFrameGrabberWindowController
 
-- (id)initWithWindow:(NSWindow *)window
+@synthesize applicationDelegate;
+
+#pragma mark -
+#pragma mark Synthesize public properties
+
+@synthesize sourceFile;
+@synthesize sourceURL;
+@synthesize verbose;
+
+@synthesize listTracks;
+@synthesize listMetadata;
+
+@synthesize fileTypesPopup;
+
+@synthesize selectedFileType;
+@synthesize filenameExtension;
+@synthesize showProgress;
+@synthesize destinationFolder;
+@synthesize baseFilenameTextField;
+@synthesize generatedFrameGrabsCommand;
+
+#pragma mark -
+#pragma mark Public methods
+
+- (id)initWithWindowNibName:(NSString *)windowNibName
+								appDelegate:(YVSAppDelegate *)appDelegate
 {
-    self = [super initWithWindow:window];
-    if (self) {
-        // Initialization code here.
-    }
-    
-    return self;
+	self = [super initWithWindowNibName:windowNibName];
+	if (self)
+	{
+		[self setApplicationDelegate:appDelegate];
+	}
+	return self;
 }
 
 - (void)windowDidLoad
 {
-    [super windowDidLoad];
-    
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+	[self.applicationDelegate setCurrentWindowController:nil];
+	[NSApp stopModal];
 }
 
 @end

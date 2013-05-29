@@ -8,6 +8,7 @@
 
 #import "YVSAppDelegate.h"
 #import "YVSMovieExporterWindowController.h"
+#import "YVSFrameGrabberWindowController.h"
 
 @implementation YVSAppDelegate
 
@@ -25,6 +26,16 @@
 						initWithWindowNibName:@"YVSMovieExporterWindowController"
 						appDelegate:self];
 	[self setCurrentWindowController:movieExportController];
+	[NSApp runModalForWindow:[self.currentWindowController window]];
+}
+
+-(IBAction)displayFrameGrabDialog:(id)sender
+{
+	YVSFrameGrabberWindowController *frameGrabberController;
+	frameGrabberController = [[YVSFrameGrabberWindowController alloc]
+							 initWithWindowNibName:@"YVSFrameGrabberWindow"
+							 appDelegate:self];
+	[self setCurrentWindowController:frameGrabberController];
 	[NSApp runModalForWindow:[self.currentWindowController window]];
 }
 

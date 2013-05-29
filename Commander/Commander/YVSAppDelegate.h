@@ -13,5 +13,6 @@
 @property (nonatomic, strong) NSWindowController *currentWindowController;
 
 -(IBAction)displayExportMovieDialog:(id)sender;
+-(IBAction)displayFrameGrabDialog:(id)sender;
 
 @end
