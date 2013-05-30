@@ -52,6 +52,11 @@
 
 - (void)windowDidLoad
 {
+	[super windowDidLoad];
+}
+
+- (void)windowWillClose:(NSNotification *)notification
+{
 	[self.applicationDelegate setCurrentWindowController:nil];
 	[NSApp stopModal];
 }

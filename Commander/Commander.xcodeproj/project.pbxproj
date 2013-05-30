@@ -12,7 +12,7 @@
 		6E8739E61752110A0022C6FB /* avexporter in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739E51752110A0022C6FB /* avexporter */; };
 		6E8739EB175616680022C6FB /* avframegrab in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739EA175616680022C6FB /* avframegrab */; };
 		6E8739F2175633420022C6FB /* YVSFrameGrabberWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E8739F1175633420022C6FB /* YVSFrameGrabberWindowController.m */; };
-		6E8739F4175633910022C6FB /* FrameGrabberWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739F3175633910022C6FB /* FrameGrabberWindow.xib */; };
+		6E8739F4175633910022C6FB /* YVSFrameGrabberWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739F3175633910022C6FB /* YVSFrameGrabberWindow.xib */; };
 		6EC248F9174647B800958FBB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC248F8174647B800958FBB /* Cocoa.framework */; };
 		6EC24903174647B800958FBB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6EC24901174647B800958FBB /* InfoPlist.strings */; };
 		6EC24905174647B800958FBB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24904174647B800958FBB /* main.m */; };
@@ -24,7 +24,7 @@
 		6EC24920174647B800958FBB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6EC2491E174647B800958FBB /* InfoPlist.strings */; };
 		6EC24923174647B800958FBB /* CommanderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24922174647B800958FBB /* CommanderTests.m */; };
 		6EC24932174687FB00958FBB /* YVSMovieExporterWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24930174687FB00958FBB /* YVSMovieExporterWindowController.m */; };
-		6EC24933174687FB00958FBB /* YVSMovieExporterWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EC24931174687FB00958FBB /* YVSMovieExporterWindowController.xib */; };
+		6EC24933174687FB00958FBB /* YVSMovieExporterWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EC24931174687FB00958FBB /* YVSMovieExporterWindow.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +44,7 @@
 		6E8739EA175616680022C6FB /* avframegrab */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; name = avframegrab; path = ../DerivedData/CommandLineConfigure/Build/Products/Debug/avframegrab; sourceTree = "<group>"; };
 		6E8739F0175633420022C6FB /* YVSFrameGrabberWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YVSFrameGrabberWindowController.h; sourceTree = "<group>"; };
 		6E8739F1175633420022C6FB /* YVSFrameGrabberWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YVSFrameGrabberWindowController.m; sourceTree = "<group>"; };
-		6E8739F3175633910022C6FB /* FrameGrabberWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FrameGrabberWindow.xib; sourceTree = "<group>"; };
+		6E8739F3175633910022C6FB /* YVSFrameGrabberWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YVSFrameGrabberWindow.xib; sourceTree = "<group>"; };
 		6EC248F5174647B800958FBB /* Commander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Commander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EC248F8174647B800958FBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6EC248FB174647B800958FBB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -66,7 +66,7 @@
 		6EC24922174647B800958FBB /* CommanderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommanderTests.m; sourceTree = "<group>"; };
 		6EC2492F174687FB00958FBB /* YVSMovieExporterWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YVSMovieExporterWindowController.h; sourceTree = "<group>"; };
 		6EC24930174687FB00958FBB /* YVSMovieExporterWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YVSMovieExporterWindowController.m; sourceTree = "<group>"; };
-		6EC24931174687FB00958FBB /* YVSMovieExporterWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YVSMovieExporterWindowController.xib; sourceTree = "<group>"; };
+		6EC24931174687FB00958FBB /* YVSMovieExporterWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YVSMovieExporterWindow.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,10 +150,10 @@
 				6EC2490B174647B800958FBB /* YVSAppDelegate.m */,
 				6EC2492F174687FB00958FBB /* YVSMovieExporterWindowController.h */,
 				6EC24930174687FB00958FBB /* YVSMovieExporterWindowController.m */,
-				6EC24931174687FB00958FBB /* YVSMovieExporterWindowController.xib */,
+				6EC24931174687FB00958FBB /* YVSMovieExporterWindow.xib */,
 				6E8739F0175633420022C6FB /* YVSFrameGrabberWindowController.h */,
 				6E8739F1175633420022C6FB /* YVSFrameGrabberWindowController.m */,
-				6E8739F3175633910022C6FB /* FrameGrabberWindow.xib */,
+				6E8739F3175633910022C6FB /* YVSFrameGrabberWindow.xib */,
 				6EC2490D174647B800958FBB /* MainMenu.xib */,
 				6EC248FF174647B800958FBB /* Supporting Files */,
 			);
@@ -266,10 +266,10 @@
 				6EC24903174647B800958FBB /* InfoPlist.strings in Resources */,
 				6EC24909174647B800958FBB /* Credits.rtf in Resources */,
 				6EC2490F174647B800958FBB /* MainMenu.xib in Resources */,
-				6EC24933174687FB00958FBB /* YVSMovieExporterWindowController.xib in Resources */,
+				6EC24933174687FB00958FBB /* YVSMovieExporterWindow.xib in Resources */,
 				6E8739E61752110A0022C6FB /* avexporter in Resources */,
 				6E8739EB175616680022C6FB /* avframegrab in Resources */,
-				6E8739F4175633910022C6FB /* FrameGrabberWindow.xib in Resources */,
+				6E8739F4175633910022C6FB /* YVSFrameGrabberWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
