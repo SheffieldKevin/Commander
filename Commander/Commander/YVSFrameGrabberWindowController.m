@@ -28,12 +28,20 @@
 @synthesize listMetadata;
 
 @synthesize fileTypesPopup;
+@synthesize frameTimesTypePopup;
+@synthesize exportTypesController;
+
+@synthesize frameTimesTextField;
+@synthesize frameTimesLabelField;
+@synthesize frameTimesTextSuffix;
 
 @synthesize selectedFileType;
+@synthesize exportImageFileTypes;
 @synthesize filenameExtension;
 @synthesize showProgress;
 @synthesize destinationFolder;
 @synthesize baseFilenameTextField;
+@synthesize firstFrameGrabFilename;
 @synthesize generatedFrameGrabsCommand;
 
 #pragma mark -
@@ -53,12 +61,39 @@
 - (void)windowDidLoad
 {
 	[super windowDidLoad];
+	NSArray *exportImageTypes;
+	exportImageTypes = CFBridgingRelease(CGImageDestinationCopyTypeIdentifiers());
+	[self setExportImageFileTypes:exportImageTypes];
+	[[self exportTypesController] setContent:self.exportImageFileTypes];
+	self.selectedFileType = [self.exportImageFileTypes objectAtIndex:0];
+	[self exportFileTypeMenuSelected:nil];
 }
 
 - (void)windowWillClose:(NSNotification *)notification
 {
 	[self.applicationDelegate setCurrentWindowController:nil];
 	[NSApp stopModal];
+}
+
+- (void)frameTimesTypeMenuSelected:(id)sender
+{
+	self.frameTimesTextField.stringValue = @"";
+}
+
+- (void)exportFileTypeMenuSelected:(id)sender
+{
+	// Need to determine file extension from file type. See code in avframegrabber.m
+	NSString *fileExtension = (NSString *)CFBridgingRelease(
+					UTTypeCopyPreferredTagWithClass(
+						(__bridge CFStringRef)self.selectedFileType,
+						kUTTagClassFilenameExtension));
+	filenameExtension.stringValue = fileExtension;
+	[self generateFrameGrabCommand:sender];
+}
+
+- (void)generateFrameGrabCommand:(id)sender
+{
+	
 }
 
 @end
