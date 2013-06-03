@@ -96,7 +96,6 @@
 										options:theObservingOptions context:nil];
 	[self addObserver:self forKeyPath:@"selectedFileType"
 										options:theObservingOptions context:nil];
-//    [self.window makeKeyAndOrderFront:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object

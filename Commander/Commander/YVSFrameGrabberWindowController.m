@@ -13,7 +13,10 @@
 @property (nonatomic, weak) YVSAppDelegate *applicationDelegate;
 
 - (void)generateFilename:(NSString *)baseFilename;
+- (NSString *)frameGrabTimes;
 + (NSString *)createCommandPath;
++ (void)copyStringToClipboard:(NSString *)clipString;
+
 @end
 
 @implementation YVSFrameGrabberWindowController
@@ -70,6 +73,16 @@
 	[[self exportTypesController] setContent:self.exportImageFileTypes];
 	self.selectedFileType = [self.exportImageFileTypes objectAtIndex:0];
 	[self exportFileTypeMenuSelected:nil];
+/*
+	NSKeyValueObservingOptions theObservingOptions;
+	theObservingOptions = (NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld);
+	[self addObserver:self forKeyPath:@"sourceURL"
+			  options:theObservingOptions context:nil];
+	[self addObserver:self forKeyPath:@"selectedPreset"
+			  options:theObservingOptions context:nil];
+	[self addObserver:self forKeyPath:@"selectedFileType"
+			  options:theObservingOptions context:nil];
+ */
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -77,6 +90,55 @@
 	[self.applicationDelegate setCurrentWindowController:nil];
 	[NSApp stopModal];
 }
+
+/*
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
+						change:(NSDictionary *)change context:(void *)context
+{
+	@autoreleasepool
+	{
+		if ([keyPath isEqualToString:@"sourceURL"])
+		{
+			AVURLAsset *theAsset;
+			theAsset = [[AVURLAsset alloc] initWithURL:[self sourceURL] options:nil];
+			self.availablePresets = [AVAssetExportSession
+									 exportPresetsCompatibleWithAsset:theAsset];
+			[self.availablePresetsController setContent:self.availablePresets];
+			if (!self.selectedPreset)
+				self.selectedPreset = [self.availablePresets objectAtIndex:0];
+			else if (![self.availablePresets containsObject:self.selectedPreset])
+				self.selectedPreset = [self.availablePresets objectAtIndex:0];
+		}
+		else if ([keyPath isEqualToString:@"selectedPreset"])
+		{
+			AVURLAsset *theAsset;
+			theAsset = [[AVURLAsset alloc] initWithURL:[self sourceURL] options:nil];
+			AVAssetExportSession *avsession;
+			avsession = [[AVAssetExportSession alloc] initWithAsset:theAsset
+														 presetName:[self selectedPreset]];
+			self.allowedFileTypes = [avsession supportedFileTypes];
+			[self.allowedFileTypesController setContent:self.allowedFileTypes];
+			if (!self.selectedFileType)
+				self.selectedFileType = [self.allowedFileTypes objectAtIndex:0];
+			else if (![self.allowedFileTypes containsObject:self.selectedFileType])
+				self.selectedFileType = [self.allowedFileTypes objectAtIndex:0];
+		}
+		else if ([keyPath isEqualToString:@"selectedFileType"])
+		{
+			NSString *fileExtension;
+			fileExtension = (NSString *)CFBridgingRelease(
+														  UTTypeCopyPreferredTagWithClass(
+																						  (__bridge CFStringRef)
+																						  self.selectedFileType,
+																						  kUTTagClassFilenameExtension));
+			[filenameExtension setStringValue:fileExtension];
+			NSString *baseFilename = self.baseFilenameTextField.stringValue;
+			if (baseFilename && [baseFilename length])
+				[self generateFilename:baseFilename];
+		}
+	}
+}
+*/
 
 - (void)frameTimesTypeMenuSelected:(id)sender
 {
@@ -144,24 +206,105 @@
 }
 
 #pragma mark -
-#pragma mark Private methods
+#pragma mark IBAction methods
 
-- (void)generateFrameGrabCommand:(id)sender
+- (IBAction)copyFrameGrabCommandToClipboard:(id)sender
 {
-	NSString *replaceString = @" -replace";
+	NSString *frameGrabCommandString = [generatedFrameGrabsCommand stringValue];
+	if (frameGrabCommandString && [frameGrabCommandString length])
+		[YVSFrameGrabberWindowController copyStringToClipboard:frameGrabCommandString];
+}
+
+
+- (IBAction)generateFrameGrabCommand:(id)sender
+{
+	NSString *listTracksString = @" -listtracks";
+	NSString *listMetadataString = @" -listmetadata";
 	NSString *verboseString = @" -verbose";
 	NSString *progressString = @" -progress";
 	
 	@autoreleasepool
 	{
-		NSMutableString *screenGrabCommand;
-		
-		NSURL *destinationFolderURL = [destinationFolder URL];
-		if (destinationFolderURL && [destinationFolderURL checkResourceIsReachableAndReturnError:nil])
+		if (self.sourceURL && [self.sourceURL
+							   checkResourceIsReachableAndReturnError:nil])
 		{
+			NSMutableString *screenGrabCommand;
+			screenGrabCommand = [[NSMutableString alloc] initWithFormat:@"%@ -source \"%@\"",
+								 [YVSFrameGrabberWindowController createCommandPath],
+								 [sourceURL path]];
 			
-		}		
+			if (self.verbose)
+				[screenGrabCommand appendString:verboseString];
+			
+			if (self.showProgress)
+				[screenGrabCommand appendString:progressString];
+			
+			if (self.listMetadata)
+				[screenGrabCommand appendString:listMetadataString];
+			
+			if (self.listTracks)
+				[screenGrabCommand appendString:listTracksString];
+			
+			[screenGrabCommand appendFormat:@" -filetype %@", self.selectedFileType];
+			NSString *theFrameGrabTimes = [self frameGrabTimes];
+			if (theFrameGrabTimes)
+				[screenGrabCommand appendString:theFrameGrabTimes];
+			
+			NSURL *destinationFolderURL = [destinationFolder URL];
+			if (destinationFolderURL && [destinationFolderURL
+										 checkResourceIsReachableAndReturnError:nil])
+			{
+				[screenGrabCommand appendFormat:@" -dest %@",
+				 [destinationFolderURL path]];
+			}
+			
+			if (baseFilenameTextField.stringValue &&
+				[baseFilenameTextField.stringValue length])
+			{
+				[screenGrabCommand appendFormat:@" -basefilename %@",
+				 baseFilenameTextField.stringValue];
+			}
+			NSString *screenGrabCommandString;
+			screenGrabCommandString = [[NSString alloc]
+									   initWithString:screenGrabCommand];
+			[generatedFrameGrabsCommand setStringValue:screenGrabCommandString];
+		}
 	}
+}
+
+#pragma mark -
+#pragma mark Private methods
+
+- (NSString *)frameGrabTimes
+{
+	NSString *theTimesString = self.frameTimesTextField.stringValue;
+	if (!(theTimesString && [theTimesString length]))
+		return nil;
+
+	NSRange charRange = [theTimesString rangeOfCharacterFromSet:
+						 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	if (charRange.length != NSNotFound)
+	{
+		NSArray *stringComponents;
+		stringComponents = [theTimesString componentsSeparatedByCharactersInSet:
+							[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+		NSMutableString *mutableString = [[NSMutableString alloc] initWithCapacity:0];
+		for (NSString *theString in stringComponents)
+			[mutableString appendString:theString];
+		theTimesString = [[NSString alloc] initWithString:mutableString];
+	}
+	NSString *selectedItemTitle = self.frameTimesTypePopup.titleOfSelectedItem;
+	
+	if (!(selectedItemTitle && [selectedItemTitle length]))
+		return nil;
+
+	if ([selectedItemTitle isEqualToString:@"Frame times"])
+		return [[NSString alloc] initWithFormat:@" -times %@", theTimesString];
+	
+	if ([selectedItemTitle isEqualToString:@"Number of frame grabs"])
+		return [[NSString alloc] initWithFormat:@" -number %@", theTimesString];
+	
+	return [[NSString alloc] initWithFormat:@" -period %@", theTimesString];
 }
 
 #pragma mark -
@@ -174,6 +317,15 @@
 	NSString *basicPath = [appBundle pathForResource:@"avframegrab" ofType:nil];
 	NSString *pathString = [NSString stringWithFormat:@"\"%@\"", basicPath];
 	return pathString;
+}
+
++ (void)copyStringToClipboard:(NSString *)clipString
+{
+	NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+	[pasteBoard clearContents];
+	NSData *data = [clipString dataUsingEncoding:NSUTF8StringEncoding];
+	NSString *stringType = (__bridge NSString *)kUTTypeUTF8PlainText;
+	[pasteBoard setData:data forType:stringType];
 }
 
 #pragma mark -

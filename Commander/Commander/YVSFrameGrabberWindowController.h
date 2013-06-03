@@ -43,5 +43,6 @@
 - (IBAction)frameTimesTypeMenuSelected:(id)sender;
 - (IBAction)exportFileTypeMenuSelected:(id)sender;
 - (IBAction)generateFrameGrabCommand:(id)sender;
+- (IBAction)copyFrameGrabCommandToClipboard:(id)sender;
 
 @end
