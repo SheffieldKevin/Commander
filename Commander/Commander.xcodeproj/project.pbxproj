@@ -13,6 +13,7 @@
 		6E8739EB175616680022C6FB /* avframegrab in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739EA175616680022C6FB /* avframegrab */; };
 		6E8739F2175633420022C6FB /* YVSFrameGrabberWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E8739F1175633420022C6FB /* YVSFrameGrabberWindowController.m */; };
 		6E8739F4175633910022C6FB /* YVSFrameGrabberWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739F3175633910022C6FB /* YVSFrameGrabberWindow.xib */; };
+		6E8739FA175E29BC0022C6FB /* Commander.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 6E8739F9175E29BC0022C6FB /* Commander.iconset */; };
 		6EC248F9174647B800958FBB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC248F8174647B800958FBB /* Cocoa.framework */; };
 		6EC24903174647B800958FBB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6EC24901174647B800958FBB /* InfoPlist.strings */; };
 		6EC24905174647B800958FBB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24904174647B800958FBB /* main.m */; };
@@ -45,6 +46,7 @@
 		6E8739F0175633420022C6FB /* YVSFrameGrabberWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YVSFrameGrabberWindowController.h; sourceTree = "<group>"; };
 		6E8739F1175633420022C6FB /* YVSFrameGrabberWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YVSFrameGrabberWindowController.m; sourceTree = "<group>"; };
 		6E8739F3175633910022C6FB /* YVSFrameGrabberWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YVSFrameGrabberWindow.xib; sourceTree = "<group>"; };
+		6E8739F9175E29BC0022C6FB /* Commander.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = Commander.iconset; sourceTree = "<group>"; };
 		6EC248F5174647B800958FBB /* Commander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Commander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EC248F8174647B800958FBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		6EC248FB174647B800958FBB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -146,6 +148,7 @@
 		6EC248FE174647B800958FBB /* Commander */ = {
 			isa = PBXGroup;
 			children = (
+				6E8739F9175E29BC0022C6FB /* Commander.iconset */,
 				6EC2490A174647B800958FBB /* YVSAppDelegate.h */,
 				6EC2490B174647B800958FBB /* YVSAppDelegate.m */,
 				6EC2492F174687FB00958FBB /* YVSMovieExporterWindowController.h */,
@@ -270,6 +273,7 @@
 				6E8739E61752110A0022C6FB /* avexporter in Resources */,
 				6E8739EB175616680022C6FB /* avframegrab in Resources */,
 				6E8739F4175633910022C6FB /* YVSFrameGrabberWindow.xib in Resources */,
+				6E8739FA175E29BC0022C6FB /* Commander.iconset in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
