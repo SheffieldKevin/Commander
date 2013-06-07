@@ -238,7 +238,7 @@
 		1E1D58AE1368D74F00D93743 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Apple, Inc";
 			};
 			buildConfigurationList = 1E1D58B11368D74F00D93743 /* Build configuration list for PBXProject "avexporter" */;
@@ -304,7 +304,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -320,7 +320,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
