@@ -266,7 +266,6 @@ static void printArgs(int argc, const char **argv);
 	printf("	./avexporter [-parameter <value> ...]\n");
 	printf("	 parameters are all preceded by a -<parameterName>.  The order of the parameters is unimportant.\n");
 	printf("	 Required parameters are  -preset <presetName> -source <sourceFileURL> -dest <outputFileURL>\n");
-	printf("	 Source and destination URL strings cannot contain spaces.\n");
 	printf("	 Available parameters are:\n");
 	printf("	 	-preset <preset name>.  The preset name eg: AVAssetExportPreset640x480 AVAssetExportPresetAppleM4VWiFi. Use -listpresets to see a full list.\n");
 	printf("	 	-destination (or -dest) <outputFileURL>\n");
