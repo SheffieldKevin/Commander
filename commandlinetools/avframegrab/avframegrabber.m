@@ -580,6 +580,40 @@ enum {
 	kMaxMetadataValueLength = 80,
 };
 
+-(void)printAnAVMetadataItem:(AVMetadataItem *)item
+{
+    NSObject *key = [item key];
+    NSString *itemValue = [[item value] description];
+    if ([itemValue length] > kMaxMetadataValueLength) {
+        itemValue = [NSString stringWithFormat:@"%@ ...",
+                     [itemValue substringToIndex:kMaxMetadataValueLength-4]];
+    }
+    if ([key isKindOfClass: [NSNumber class]])
+    {
+        NSInteger longValue = [(NSNumber *)key longValue];
+        char *charSource = (char *)&longValue;
+        char charValue[5] = {0};
+        charValue[0] = charSource[3];
+        charValue[1] = charSource[2];
+        charValue[2] = charSource[1];
+        charValue[3] = charSource[0];
+        NSString *stringKey;
+        stringKey = [[NSString alloc]
+                     initWithBytes:charValue
+                     length:4
+                     encoding:NSMacOSRomanStringEncoding];
+        printNSString([NSString stringWithFormat:
+                       @"  metadata item key:%@ (%ld), keySpace:%@ commonKey:%@ value:%@",
+                       stringKey, longValue, [item keySpace], [item commonKey], itemValue]);
+    }
+    else
+    {
+        printNSString([NSString stringWithFormat:
+                       @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
+                       [item key], [item keySpace], [item commonKey], itemValue]);
+    }
+}
+
 - (void)doListMetadata:(NSString *)assetPath
 {
 	//  A simple listing of the metadata in the asset provided
@@ -593,7 +627,9 @@ enum {
 			NSLog(@"Metadata for format:%@", format);
 			for (AVMetadataItem *item in [sourceAsset metadataForFormat:format])
 			{
-				NSObject *key = [item key];
+                [self printAnAVMetadataItem:item];
+
+/*              NSObject *key = [item key];
 				NSString *itemValue = [[item value] description];
 				if ([itemValue length] > kMaxMetadataValueLength) {
 					itemValue = [NSString stringWithFormat:@"%@ ...",
@@ -623,6 +659,7 @@ enum {
 					   @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
 					   [item key], [item keySpace], [item commonKey], itemValue]);
 				}
+*/
 			}
 		}
 	}

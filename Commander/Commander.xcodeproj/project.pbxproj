@@ -20,7 +20,6 @@
 		6EC24909174647B800958FBB /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 6EC24907174647B800958FBB /* Credits.rtf */; };
 		6EC2490C174647B800958FBB /* YVSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC2490B174647B800958FBB /* YVSAppDelegate.m */; };
 		6EC2490F174647B800958FBB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EC2490D174647B800958FBB /* MainMenu.xib */; };
-		6EC24917174647B800958FBB /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC24916174647B800958FBB /* SenTestingKit.framework */; };
 		6EC24918174647B800958FBB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EC248F8174647B800958FBB /* Cocoa.framework */; };
 		6EC24920174647B800958FBB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6EC2491E174647B800958FBB /* InfoPlist.strings */; };
 		6EC24923174647B800958FBB /* CommanderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EC24922174647B800958FBB /* CommanderTests.m */; };
@@ -60,8 +59,7 @@
 		6EC2490A174647B800958FBB /* YVSAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YVSAppDelegate.h; sourceTree = "<group>"; };
 		6EC2490B174647B800958FBB /* YVSAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YVSAppDelegate.m; sourceTree = "<group>"; };
 		6EC2490E174647B800958FBB /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		6EC24915174647B800958FBB /* CommanderTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CommanderTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		6EC24916174647B800958FBB /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		6EC24915174647B800958FBB /* CommanderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CommanderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EC2491D174647B800958FBB /* CommanderTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CommanderTests-Info.plist"; sourceTree = "<group>"; };
 		6EC2491F174647B800958FBB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6EC24921174647B800958FBB /* CommanderTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommanderTests.h; sourceTree = "<group>"; };
@@ -86,7 +84,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6EC24917174647B800958FBB /* SenTestingKit.framework in Frameworks */,
 				6EC24918174647B800958FBB /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -120,7 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				6EC248F5174647B800958FBB /* Commander.app */,
-				6EC24915174647B800958FBB /* CommanderTests.octest */,
+				6EC24915174647B800958FBB /* CommanderTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -129,7 +126,6 @@
 			isa = PBXGroup;
 			children = (
 				6EC248F8174647B800958FBB /* Cocoa.framework */,
-				6EC24916174647B800958FBB /* SenTestingKit.framework */,
 				6EC248FA174647B800958FBB /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -230,8 +226,8 @@
 			);
 			name = CommanderTests;
 			productName = CommanderTests;
-			productReference = 6EC24915174647B800958FBB /* CommanderTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = 6EC24915174647B800958FBB /* CommanderTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -240,6 +236,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = YVS;
+				LastTestingUpgradeCheck = 0510;
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Kevin Meaney";
 				TargetAttributes = {
@@ -468,13 +465,15 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Commander.app/Contents/MacOS/Commander";
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\\\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\\\"",
+					"$(inherited)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Commander/Commander-Prefix.pch";
 				INFOPLIST_FILE = "CommanderTests/CommanderTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -483,13 +482,15 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Commander.app/Contents/MacOS/Commander";
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\\\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\\\"",
+					"$(inherited)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Commander/Commander-Prefix.pch";
 				INFOPLIST_FILE = "CommanderTests/CommanderTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};

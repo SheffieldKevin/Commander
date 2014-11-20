@@ -595,6 +595,55 @@ enum {
 	kMaxMetadataValueLength = 80,
 };
 
+-(void)printAnAVMetadataItem:(AVMetadataItem *)item
+{
+    NSObject *key = [item key];
+    NSString *itemValue = [[item value] description];
+    if ([itemValue length] > kMaxMetadataValueLength) {
+        itemValue = [NSString stringWithFormat:@"%@ ...",
+                     [itemValue substringToIndex:kMaxMetadataValueLength-4]];
+    }
+    if ([key isKindOfClass: [NSNumber class]])
+    {
+        NSInteger longValue = [(NSNumber *)key longValue];
+        char *charSource = (char *)&longValue;
+        char charValue[5] = {0};
+        charValue[0] = charSource[3];
+        charValue[1] = charSource[2];
+        charValue[2] = charSource[1];
+        charValue[3] = charSource[0];
+        NSString *stringKey;
+        stringKey = [[NSString alloc]
+                     initWithBytes:charValue
+                     length:4
+                     encoding:NSMacOSRomanStringEncoding];
+        printNSString([NSString stringWithFormat:
+                       @"  metadata item key:%@ (%ld), keySpace:%@ commonKey:%@ value:%@",
+                       stringKey, longValue, [item keySpace], [item commonKey], itemValue]);
+    }
+    else
+    {
+        printNSString([NSString stringWithFormat:
+                       @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
+                       [item key], [item keySpace], [item commonKey], itemValue]);
+    }
+}
+
+-(void)printCMTime:(CMTime)cmTime
+{
+    if (cmTime.timescale == 0)
+    {
+        printNSString([NSString stringWithFormat:@"timescale = 0, %lld",
+                                                    cmTime.value]);
+    }
+    else
+    {
+        float timeInSecs = ((double)cmTime.value) / (double)cmTime.timescale;
+        printNSString([NSString stringWithFormat:@"time: %f (secs), value: %lld, scale: %d",
+                                            timeInSecs, cmTime.value, cmTime.timescale]);
+    }
+}
+
 - (void)doListMetadata:(NSString *)assetPath
 {
 	//  A simple listing of the metadata in the asset provided
@@ -607,41 +656,86 @@ enum {
 		for (NSString *format in [sourceAsset availableMetadataFormats])
 		{
 			NSLog(@"Metadata for format:%@", format);
+            
 			for (AVMetadataItem *item in [sourceAsset metadataForFormat:format])
 			{
-				NSObject *key = [item key];
-				NSString *itemValue = [[item value] description];
-				if ([itemValue length] > kMaxMetadataValueLength) {
-					itemValue = [NSString stringWithFormat:@"%@ ...",
-							[itemValue substringToIndex:kMaxMetadataValueLength-4]];
-				}
-				if ([key isKindOfClass: [NSNumber class]])
-				{
-					NSInteger longValue = [(NSNumber *)key longValue];
-					char *charSource = (char *)&longValue;
-					char charValue[5] = {0};
-					charValue[0] = charSource[3];
-					charValue[1] = charSource[2];
-					charValue[2] = charSource[1];
-					charValue[3] = charSource[0];
-					NSString *stringKey = [[NSString alloc] initWithBytes: charValue
-										length:4 encoding:NSMacOSRomanStringEncoding];
-					printNSString([NSString stringWithFormat:
-					   @"  metadata item key:%@ (%ld), keySpace:%@ commonKey:%@ value:%@",
-					   stringKey, longValue, [item keySpace], [item commonKey],
-						itemValue]);
-				}
-				else
-				{
-					printNSString([NSString stringWithFormat:
-					   @"  metadata item key:%@, keySpace:%@ commonKey:%@ value:%@",
-					   [item key], [item keySpace], [item commonKey], itemValue]);
-				}
+                [self printAnAVMetadataItem:item];
 			}
 		}
+        
+        NSArray *assetTracks = [sourceAsset tracks];
+        for (AVAssetTrack *track in assetTracks)
+        {
+            printNSString(@"============================================");
+            NSLog(@"Metadata for asset track media type %@ and trackID: %d",
+                                            [track mediaType], [track trackID]);
+            for (AVMetadataItem *item in [track commonMetadata])
+            {
+                [self printAnAVMetadataItem:item];
+            }
+            for (NSString *format in [track availableMetadataFormats])
+            {
+                NSLog(@"Metadata for format:%@", format);
+                
+                for (AVMetadataItem *item in [sourceAsset metadataForFormat:format])
+                {
+                    [self printAnAVMetadataItem:item];
+                }
+            }
+            CMTimeRange timeRange = track.timeRange;
+            printNSString(@"Start time: ");
+            [self printCMTime:timeRange.start];
+            printNSString(@"Duration: ");
+            [self printCMTime:timeRange.duration];
+            
+            NSString *desc;
+            if ([track hasMediaCharacteristic:AVMediaCharacteristicVisual])
+            {
+                desc = [NSString stringWithFormat:@"Visual: %@, ", track.mediaType];
+                printNSString(desc);
+                CGSize size = track.naturalSize;
+                desc = [NSString stringWithFormat:@"Size: %f, %f",
+                                                  size.width,
+                                                  size.height];
+                printNSString(desc);
+                desc = [NSString stringWithFormat:@"Frame rate: %f",
+                                                  track.nominalFrameRate];
+                printNSString(desc);
+                printNSString(@"Min frame duration:");
+                [self printCMTime:track.minFrameDuration];
+                printNSString(desc);
+            }
+            else if ([track hasMediaCharacteristic:AVMediaCharacteristicAudible])
+            {
+                printNSString(@"Audible Media");
+                desc = [NSString stringWithFormat:@"Preferred volume: %f",
+                        track.preferredVolume];
+                printNSString(desc);
+            }
+            else if ([track hasMediaCharacteristic:AVMediaCharacteristicLegible])
+            {
+                printNSString(@"Legible Media");
+            }
+            
+            NSArray *segments = [track segments];
+            printNSString([NSString stringWithFormat:@"Num segments: %ld",
+                                                     (long)segments.count]);
+            for (AVAssetTrackSegment *segment in segments)
+            {
+                CMTimeMapping mapping = segment.timeMapping;
+                printNSString(@"Source start time:");
+                [self printCMTime:mapping.source.start];
+                printNSString(@"Source duration:");
+                [self printCMTime:mapping.source.duration];
+                printNSString(@"Target start time:");
+                [self printCMTime:mapping.target.start];
+                printNSString(@"Target duration:");
+                [self printCMTime:mapping.target.duration];
+            }
+            printNSString(@"============================================");
+        }
 	}
 }
-
 
 @end
 
