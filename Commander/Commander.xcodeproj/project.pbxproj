@@ -67,6 +67,7 @@
 		6EC2492F174687FB00958FBB /* YVSMovieExporterWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YVSMovieExporterWindowController.h; sourceTree = "<group>"; };
 		6EC24930174687FB00958FBB /* YVSMovieExporterWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YVSMovieExporterWindowController.m; sourceTree = "<group>"; };
 		6EC24931174687FB00958FBB /* YVSMovieExporterWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YVSMovieExporterWindow.xib; sourceTree = "<group>"; };
+		6EFED4801A1E3DDC00F9932C /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = MyPlayground.playground; path = ../MyPlayground.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +104,7 @@
 		6EC248EC174647B800958FBB = {
 			isa = PBXGroup;
 			children = (
+				6EFED4801A1E3DDC00F9932C /* MyPlayground.playground */,
 				6E8739E4175210C10022C6FB /* Executables */,
 				6E8739E1174A903E0022C6FB /* AVFoundation.framework */,
 				6E8739DF174A903A0022C6FB /* CoreMedia.framework */,
