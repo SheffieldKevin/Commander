@@ -10,7 +10,4 @@
    <FileRef
       location = "group:mergemovies/mergemovies.xcodeproj">
    </FileRef>
-   <FileRef
-      location = "group:moviemerge/moviemerge.xcodeproj">
-   </FileRef>
 </Workspace>
