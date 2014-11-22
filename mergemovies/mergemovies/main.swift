@@ -1,7 +1,9 @@
 // #!/usr/bin/env swift
-// If you want to run this file from the command line uncomment the above line.
+// If you want to run this file from the command line uncomment the above line
+// so that the '#' symbol is at the beginning of the line.
 //  Created by Kevin Meaney on 20/11/2014.
 //  Copyright (c) 2014 Kevin Meaney. All rights reserved.
+// The first part of the script is basically config options.
 
 import Cocoa
 import AVFoundation
