@@ -8,30 +8,35 @@
 import Cocoa
 import AVFoundation
 
-// Set the transition duration time to one second.
-let transDuration = CMTimeMake(1, 1)
+// Set the transition duration time to two seconds.
+let transDuration = CMTimeMake(2, 1)
 
 // The movies below have the same dimensions as the movie I want to generate
-let movieSize = CGSizeMake(400, 252)
+let movieSize = CGSizeMake(576, 360)
 
 // This is the preset applied to the AVAssetExportSession.
-let exportPreset = AVAssetExportPresetAppleM4VCellular
+// If the passthrough preset is used then the created movie file has two video
+// tracks but the transitions between the segments in each track are lost.
+// Other presets will generate a file with a single video track with the 
+// transitions applied before export happens.
+// let exportPreset = AVAssetExportPresetPassthrough
+let exportPreset = AVAssetExportPreset640x480
 
 // Path and file name to where the generated movie file will be created.
 // If a previous file was at this location it will be deleted before the new
 // file is generated. BEWARE
-let exportFilePath:NSString = "~/Desktop/TransitionsMovie.m4v"
+let exportFilePath:NSString = "~/Desktop/TransitionsMovie.mov"
 
 // Create the list of paths to movie files that generated movie will transition between.
 // The movies need to not have any copy protection.
 
 let movieFilePaths = [
-    "~/Movies/clips/418_clip1_sd.m4v",
-    "~/Movies/clips/418_clip2_sd.m4v",
-    "~/Movies/clips/418_clip3_sd.m4v",
-    "~/Movies/clips/418_clip4_sd.m4v",
-    "~/Movies/clips/418_clip5_sd.m4v",
-    "~/Movies/clips/418_clip6_sd.m4v"
+    "~/Movies/clips/410_clip1.mov",
+    "~/Movies/clips/410_clip2.mov",
+    "~/Movies/clips/410_clip3.mov",
+    "~/Movies/clips/410_clip4.mov",
+    "~/Movies/clips/410_clip5.mov",
+    "~/Movies/clips/410_clip6.mov"
 ]
 
 // Convert the file paths into URLS after expanding any tildes in the path
@@ -42,9 +47,6 @@ let urls = movieFilePaths.map({ (filePath) -> NSURL in
 
 // Make movie assets from the URLs.
 let movieAssets:[AVURLAsset] = urls.map { AVURLAsset(URL:$0, options:.None)! }
-
-// Cursor time represents the time we are currently at in the movie.
-var cursorTime = kCMTimeZero
 
 // Create the mutable composition that we are going to build up.
 var composition = AVMutableComposition()
@@ -88,7 +90,8 @@ func calculateTimeRanges(#transitionDuration: CMTime,
 
     var passThroughTimeRanges:[NSValue] = [NSValue]()
     var transitionTimeRanges:[NSValue] = [NSValue]()
-
+    var cursorTime = kCMTimeZero
+            
     for (var i = 0 ; i < assetsWithVideoTracks.count ; ++i)
     {
         let asset = assetsWithVideoTracks[i]
@@ -182,9 +185,10 @@ func makeExportSession(#preset: String,
              #videoComposition: AVMutableVideoComposition,
                   #composition: AVMutableComposition) -> AVAssetExportSession {
     let session = AVAssetExportSession(asset: composition, presetName: preset)
-    session.videoComposition = videoComposition
+    session.videoComposition = videoComposition.copy() as AVVideoComposition
     // session.outputFileType = "com.apple.m4v-video"
-    session.outputFileType = AVFileTypeAppleM4V
+    // session.outputFileType = AVFileTypeAppleM4V
+    session.outputFileType = AVFileTypeQuickTimeMovie
     return session
 }
 
