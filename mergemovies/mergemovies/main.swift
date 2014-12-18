@@ -39,18 +39,6 @@ let movieFilePaths = [
     "~/Movies/clips/410_clip6.mov"
 ]
 
-// Convert the file paths into URLS after expanding any tildes in the path
-let urls = movieFilePaths.map({ (filePath) -> NSURL in
-    let expandedPath = filePath.stringByExpandingTildeInPath;
-    return NSURL(fileURLWithPath: expandedPath, isDirectory: false)!
-})
-
-// Make movie assets from the URLs.
-let movieAssets:[AVURLAsset] = urls.map { AVURLAsset(URL:$0, options:.None)! }
-
-// Create the mutable composition that we are going to build up.
-var composition = AVMutableComposition()
-
 // Function to build the composition tracks.
 func buildCompositionTracks(#composition: AVMutableComposition,
                      #transitionDuration: CMTime,
@@ -65,22 +53,19 @@ func buildCompositionTracks(#composition: AVMutableComposition,
     
     var cursorTime = kCMTimeZero
     
-    for (var i = 0 ; i < assetsWithVideoTracks.count ; ++i) {
-        let trackIndex = i % 2
-        let currentTrack = videoTracks[trackIndex]
-        let assetTrack = assetsWithVideoTracks[i].tracksWithMediaType(AVMediaTypeVideo)[0] as AVAssetTrack
-        let timeRange = CMTimeRangeMake(kCMTimeZero, assetsWithVideoTracks[i].duration)
+    for (index, videoAsset) in enumerate(assetsWithVideoTracks) {
+        let currentTrack = videoTracks[index % 2]
+        let timeRange = CMTimeRangeMake(kCMTimeZero,
+                                        assetsWithVideoTracks[index].duration)
         currentTrack.insertTimeRange( timeRange,
-                             ofTrack: assetTrack,
-                              atTime: cursorTime,
-                               error: nil)
-        
+            ofTrack: videoAsset.tracksWithMediaType(AVMediaTypeVideo)[0] as AVAssetTrack,
+            atTime: cursorTime,
+            error: nil)
+
         // Overlap clips by tranition duration // 4
-        cursorTime = CMTimeAdd(cursorTime, assetsWithVideoTracks[i].duration)
+        cursorTime = CMTimeAdd(cursorTime, videoAsset.duration)
         cursorTime = CMTimeSubtract(cursorTime, transitionDuration)
     }
-    
-    // Currently leaving out voice overs and movie tracks. // 5
 }
 
 // Function to calculate both the pass through time and the transition time ranges
@@ -91,34 +76,28 @@ func calculateTimeRanges(#transitionDuration: CMTime,
     var passThroughTimeRanges:[NSValue] = [NSValue]()
     var transitionTimeRanges:[NSValue] = [NSValue]()
     var cursorTime = kCMTimeZero
-            
-    for (var i = 0 ; i < assetsWithVideoTracks.count ; ++i)
-    {
-        let asset = assetsWithVideoTracks[i]
-        var timeRange = CMTimeRangeMake(cursorTime, asset.duration)
-        
-        if i > 0 {
+    
+    for (index, videoAsset) in enumerate(assetsWithVideoTracks) {
+        var timeRange = CMTimeRangeMake(cursorTime, videoAsset.duration)
+        if index > 0 {
             timeRange.start = CMTimeAdd(timeRange.start, transDuration)
             timeRange.duration = CMTimeSubtract(timeRange.duration, transDuration)
         }
         
-        if i + 1 < assetsWithVideoTracks.count {
+        if index + 1 < assetsWithVideoTracks.count {
             timeRange.duration = CMTimeSubtract(timeRange.duration, transDuration)
         }
         
         passThroughTimeRanges.append(NSValue(CMTimeRange: timeRange))
-        cursorTime = CMTimeAdd(cursorTime, asset.duration)
+        cursorTime = CMTimeAdd(cursorTime, videoAsset.duration)
         cursorTime = CMTimeSubtract(cursorTime, transDuration)
-        // println("cursorTime.value: \(cursorTime.value)")
-        // println("cursorTime.timescale: \(cursorTime.timescale)")
         
-        if i + 1 < assetsWithVideoTracks.count {
+        if index + 1 < assetsWithVideoTracks.count {
             timeRange = CMTimeRangeMake(cursorTime, transDuration)
-            // println("timeRange start value: \(timeRange.start.value)")
-            // println("timeRange start timescale: \(timeRange.start.timescale)")
             transitionTimeRanges.append(NSValue(CMTimeRange: timeRange))
         }
     }
+
     return (passThroughTimeRanges, transitionTimeRanges)
 }
 
@@ -139,41 +118,41 @@ func buildVideoCompositionAndInstructions(
     let videoComposition = AVMutableVideoComposition(propertiesOfAsset: composition)
                             
     // Now create the instructions from the various time ranges.
-    for (var i = 0 ; i < passThroughTimeRanges.count ; ++i)
+    for (index, timeRange) in enumerate(passThroughTimeRanges)
     {
-        let trackIndex = i % 2
-        let currentTrack = tracks[trackIndex]
+        let currentTrack = tracks[index % 2]
         let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = passThroughTimeRanges[i].CMTimeRangeValue
-        
+        instruction.timeRange = timeRange.CMTimeRangeValue
         let layerInstruction = AVMutableVideoCompositionLayerInstruction(
-                                                    assetTrack: currentTrack)
+            assetTrack: currentTrack)
         instruction.layerInstructions = [layerInstruction]
         compositionInstructions.append(instruction)
-        
-        if i < transitionTimeRanges.count {
-            let instruction = AVMutableVideoCompositionInstruction()
-            instruction.timeRange = transitionTimeRanges[i].CMTimeRangeValue
-            
-            // Determine the foreground and background tracks.
-            let fgTrack = tracks[trackIndex]
-            let bgTrack = tracks[1 - trackIndex]
 
+        if index < transitionTimeRanges.count {
+            let instruction = AVMutableVideoCompositionInstruction()
+            instruction.timeRange = transitionTimeRanges[index].CMTimeRangeValue
+
+            // Determine the foreground and background tracks.
+            let fgTrack = tracks[index % 2]
+            let bgTrack = tracks[1 - (index % 2)]
+            
             // Create the "from layer" instruction.
             let fLInstruction = AVMutableVideoCompositionLayerInstruction(
-                                                        assetTrack: fgTrack)
+                assetTrack: fgTrack)
             
             // Make the opacity ramp and apply it to the from layer instruction.
             fLInstruction.setOpacityRampFromStartOpacity(1.0, toEndOpacity:0.0,
-                                            timeRange: instruction.timeRange)
-
+                timeRange: instruction.timeRange)
+            
             // Create the "to layer" instruction. Do I need this?
             let tLInstruction = AVMutableVideoCompositionLayerInstruction(
-                                                        assetTrack: bgTrack)
+                assetTrack: bgTrack)
             instruction.layerInstructions = [fLInstruction, tLInstruction]
+            // instruction.layerInstructions = [fLInstruction]
             compositionInstructions.append(instruction)
         }
     }
+
     videoComposition.instructions = compositionInstructions
     videoComposition.renderSize = renderSize
     videoComposition.frameDuration = CMTimeMake(1, 30)
@@ -192,6 +171,18 @@ func makeExportSession(#preset: String,
     return session
 }
 
+// Convert the file paths into URLS after expanding any tildes in the path
+let urls = movieFilePaths.map({ (filePath) -> NSURL in
+    let expandedPath = filePath.stringByExpandingTildeInPath;
+    return NSURL(fileURLWithPath: expandedPath, isDirectory: false)!
+})
+
+// Make movie assets from the URLs.
+let movieAssets:[AVURLAsset] = urls.map { AVURLAsset(URL:$0, options:.None)! }
+
+// Create the mutable composition that we are going to build up.
+var composition = AVMutableComposition()
+
 // Now call the functions to do the preperation work for preparing a composition to export.
 // First create the tracks needed for the composition.
 buildCompositionTracks(composition: composition,
@@ -199,8 +190,11 @@ buildCompositionTracks(composition: composition,
              assetsWithVideoTracks: movieAssets)
 
 // Create the passthru and transition time ranges.
-let timeRanges = calculateTimeRanges(transitionDuration: transDuration,
-                                  assetsWithVideoTracks: movieAssets)
+// let timeRanges = calculateTimeRanges(transitionDuration: transDuration,
+//                                  assetsWithVideoTracks: movieAssets)
+
+let timeRanges = calculateTimeRanges(
+    transitionDuration: transDuration, assetsWithVideoTracks: movieAssets)
 
 // Create the instructions for which movie to show and create the video composition.
 let videoComposition = buildVideoCompositionAndInstructions(
