@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 @interface YVSARCExamples : NSObject
 @property (strong) NSString *strongString;
@@ -363,18 +364,19 @@ static void TestArc20()
 	NSLog(@"TestArc20 weakString:%@", weakString); // String 20
 }
 
+static void TestArc21()
+{
+    NSColor * __weak color;
+    @autoreleasepool {
+        color = [NSColor whiteColor];
+        NSLog(@"TestArc21_1 weak color: %p %@", color, color);
+    }
+    NSLog(@"TestArc21_2 weak color: %p %@", color, color);
+}
+
 static void PrintStrongStringToLog(NSString *string)
 {
 	NSLog(@"PrintStrongStringToLog %@", string);
-}
-
-static void TestArc21()
-{
-	NSString *strongString = [[NSString alloc] initWithFormat:@"TestArc21 String %d", 21];
-	PrintStrongStringToLog(strongString);
-	NSString * __weak weakString = strongString;
-	strongString = nil;
-	NSLog(@"TestArc21 weakString:%@", weakString); // null
 }
 
 int main(int argc, const char * argv[])

@@ -88,6 +88,7 @@
 		6E2E31B41A1E58BE00E5C199 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Kevin Meaney";
 				TargetAttributes = {
@@ -233,6 +234,7 @@
 				6E2E31C51A1E58BE00E5C199 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
